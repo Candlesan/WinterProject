@@ -34,6 +34,9 @@
     <Filter Include="Source\Scene">
       <UniqueIdentifier>{a89bea62-e83d-4389-99dc-57fb1fa9640c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Component">
+      <UniqueIdentifier>{29451f51-61b1-45ac-9b6d-566a6c154780}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="External\imgui-docking\imconfig.h">
@@ -150,6 +153,12 @@
     <ClInclude Include="Source\SceneGame.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Actor.h">
+      <Filter>Source\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Component.h">
+      <Filter>Source\Component</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui-docking\imgui.cpp">
@@ -244,6 +253,9 @@
     </ClCompile>
     <ClCompile Include="Source\SceneGame.cpp">
       <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Actor.cpp">
+      <Filter>Source\Component</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

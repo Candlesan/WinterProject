@@ -1,6 +1,9 @@
 #include "SceneGame.h"
 #include "Graphics.h"
 
+// コンポーネント
+#include "Actor.h"
+
 
 // 初期化
 void SceneGame::Initialize()
@@ -23,9 +26,13 @@ void SceneGame::Initialize()
 	);
 	cameraController.SyncCameraToController(camera);
 
-
-	// ステージ初期化
-	stage = std::make_shared<Stage>(device);
+	// ステージモデルの初期化
+	{
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->LoadModel(device, "Data/Model/Stage/ExampleStage.glb");
+		actor->SetName("Stage");
+		actor->SetPosition({ 0, 0, 0 });
+	}
 }
 
 // 更新処理
@@ -35,8 +42,11 @@ void SceneGame::Update(float elapsedTime)
 	cameraController.Update();
 	cameraController.SyncControllerToCamera(camera);
 
-	// ステージ更新処理
-	stage->Update(elapsedTime);
+	// すべてのアクターを更新する
+	ActorManager::Instance().Update(elapsedTime);
+
+	// すべてのアクターのモデルのワールド行列を更新
+	ActorManager::Instance().UpdateTransform();
 }
 
 // 描画処理
@@ -60,8 +70,9 @@ void SceneGame::Render()
 
 	// 3Dモデル描画
 	{
-		// ステージ描画
-		stage->Render(rc, modelRenderer);
+		// すべてのアクター内のモデルを描画
+		ActorManager::Instance().Render(camera.GetView(), camera.GetProjection());
+		modelRenderer->Render(rc);
 	}
 }
 

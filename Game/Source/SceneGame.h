@@ -1,6 +1,5 @@
 #pragma once
 #include "Scene.h"
-#include "Stage.h"
 #include "Camera.h"
 #include "FreeCameraController.h"
 #include "Model.h"
@@ -32,5 +31,4 @@ public:
 private:
 	Camera								camera;
 	FreeCameraController				cameraController;
-	std::shared_ptr<Stage> stage;
 };
