@@ -132,6 +132,7 @@
     <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\ModelRenderer.h" />
     <ClInclude Include="Source\LambertShader.h" />
+    <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\ShapeRenderer.h" />
     <ClInclude Include="Source\GLTFImporter.h" />
     <ClInclude Include="Source\GpuResourceUtils.h" />
@@ -146,6 +147,7 @@
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\Shader.h" />
     <ClInclude Include="Source\Sprite.h" />
+    <ClInclude Include="Source\Stage.h" />
     <ClInclude Include="Source\TransformUtils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,6 +168,7 @@
     <ClCompile Include="Source\FreeCameraController.cpp" />
     <ClCompile Include="Source\ModelRenderer.cpp" />
     <ClCompile Include="Source\LambertShader.cpp" />
+    <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\ShapeRenderer.cpp" />
     <ClCompile Include="Source\GLTFImporter.cpp" />
     <ClCompile Include="Source\GpuResourceUtils.cpp" />
@@ -177,6 +180,7 @@
     <ClCompile Include="Source\RenderState.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Sprite.cpp" />
+    <ClCompile Include="Source\Stage.cpp" />
     <ClCompile Include="Source\TransformUtils.cpp" />
   </ItemGroup>
   <ItemGroup>
