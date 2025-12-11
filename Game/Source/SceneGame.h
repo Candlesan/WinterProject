@@ -1,7 +1,5 @@
 #pragma once
 #include "Scene.h"
-#include "Camera.h"
-#include "FreeCameraController.h"
 #include "Model.h"
 
 
@@ -27,8 +25,4 @@ public:
 
 	// GUI•`‰æ
 	void DrawGUI();
-
-private:
-	Camera								camera;
-	FreeCameraController				cameraController;
 };

@@ -10,6 +10,7 @@ class Model
 {
 public:
 	Model(ID3D11Device* device, const char* filename, float sampleRate = 60);
+	~Model();
 
 	static const std::vector<D3D11_INPUT_ELEMENT_DESC> InputElementDescs;
 
@@ -200,4 +201,5 @@ private:
 	std::vector<Mesh>		meshes;
 	std::vector<Node>		nodes;
 	std::vector<Animation>	animations;
+	std::string modelName;
 };

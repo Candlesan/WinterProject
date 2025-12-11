@@ -64,14 +64,14 @@ public:
 
 	// コンポーネント追加
 	template<class T, class... Args>
-	std::shared_ptr<T> AddCompornent(Args... args) // args...:任意の引数にするためのテンプレートパラメーターパック
+	std::shared_ptr<T> AddComponent(Args... args) // args...:任意の引数にするためのテンプレートパラメーターパック
 	{
 		std::shared_ptr<T> component = std::make_shared<T>(args...); // コンポーネントのインスタンスの生成と初期化
 		component->SetActor(shared_from_this()); // アクターの共有ポインタを取得
 
 		// アクターへの参照が設定されたコンポーネントを、アクターが内部に持つ持つリストに追加
 		components.emplace_back(component);
-		return component
+		return component;
 	}
 
 	// コンポーネント取得
@@ -81,7 +81,7 @@ public:
 		// 今見ている要素が指定した型Tであるかを捜索
 		for (std::shared_ptr<Component>& component : components)
 		{
-			std::shared_ptr<t> p = std::dynamic_pointer_cast<T>(component);
+			std::shared_ptr<T> p = std::dynamic_pointer_cast<T>(component);
 			if (p == nullptr) continue;
 			return p;
 		}
@@ -141,9 +141,6 @@ private:
 	std::set<std::shared_ptr<Actor>>		selectionActors;
 	std::set<std::shared_ptr<Actor>>		removeActors;
 
-
-
 	bool					hiddenLister = false;
 	bool					hiddenDetail = false;
-
 };

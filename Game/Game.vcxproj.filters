@@ -37,6 +37,12 @@
     <Filter Include="Source\Component">
       <UniqueIdentifier>{29451f51-61b1-45ac-9b6d-566a6c154780}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Player">
+      <UniqueIdentifier>{0fb20dfe-4bb3-4dbc-b8e0-dc1738c68c89}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Move">
+      <UniqueIdentifier>{efec60b1-eef3-43ce-9e08-776eae4e5a0c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="External\imgui-docking\imconfig.h">
@@ -147,9 +153,6 @@
     <ClInclude Include="Source\Scene.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Stage.h">
-      <Filter>Source</Filter>
-    </ClInclude>
     <ClInclude Include="Source\SceneGame.h">
       <Filter>Source\Scene</Filter>
     </ClInclude>
@@ -158,6 +161,24 @@
     </ClInclude>
     <ClInclude Include="Source\Component.h">
       <Filter>Source\Component</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CameraComponent.h">
+      <Filter>Source\Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\GamePad.h">
+      <Filter>Source\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Input.h">
+      <Filter>Source\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Mouse.h">
+      <Filter>Source\System</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\MoveComponent.h">
+      <Filter>Source\Move</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Player.h">
+      <Filter>Source\Player</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -248,14 +269,29 @@
     <ClCompile Include="Source\Scene.cpp">
       <Filter>Source\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Stage.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\SceneGame.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Actor.cpp">
       <Filter>Source\Component</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\SceneGame.cpp">
+      <Filter>Source\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\GamePad.cpp">
+      <Filter>Source\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Input.cpp">
+      <Filter>Source\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Mouse.cpp">
+      <Filter>Source\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CameraComponent.cpp">
+      <Filter>Source\Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\MoveComponent.cpp">
+      <Filter>Source\Move</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Player.cpp">
+      <Filter>Source\Player</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

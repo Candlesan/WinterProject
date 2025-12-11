@@ -127,13 +127,19 @@
     <ClInclude Include="Source\Actor.h" />
     <ClInclude Include="Source\BasicShader.h" />
     <ClInclude Include="Source\Camera.h" />
+    <ClInclude Include="Source\CameraComponent.h" />
     <ClInclude Include="Source\Component.h" />
     <ClInclude Include="Source\Dialog.h" />
     <ClInclude Include="Source\Framework.h" />
     <ClInclude Include="Source\FreeCameraController.h" />
+    <ClInclude Include="Source\GamePad.h" />
+    <ClInclude Include="Source\Input.h" />
     <ClInclude Include="Source\Light.h" />
     <ClInclude Include="Source\ModelRenderer.h" />
     <ClInclude Include="Source\LambertShader.h" />
+    <ClInclude Include="Source\Mouse.h" />
+    <ClInclude Include="Source\MoveComponent.h" />
+    <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\ShapeRenderer.h" />
     <ClInclude Include="Source\GLTFImporter.h" />
@@ -149,7 +155,6 @@
     <ClInclude Include="Source\Scene.h" />
     <ClInclude Include="Source\Shader.h" />
     <ClInclude Include="Source\Sprite.h" />
-    <ClInclude Include="Source\Stage.h" />
     <ClInclude Include="Source\TransformUtils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -166,11 +171,17 @@
     <ClCompile Include="Source\Actor.cpp" />
     <ClCompile Include="Source\BasicShader.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
+    <ClCompile Include="Source\CameraComponent.cpp" />
     <ClCompile Include="Source\Dialog.cpp" />
     <ClCompile Include="Source\Framework.cpp" />
     <ClCompile Include="Source\FreeCameraController.cpp" />
+    <ClCompile Include="Source\GamePad.cpp" />
+    <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\ModelRenderer.cpp" />
     <ClCompile Include="Source\LambertShader.cpp" />
+    <ClCompile Include="Source\Mouse.cpp" />
+    <ClCompile Include="Source\MoveComponent.cpp" />
+    <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\ShapeRenderer.cpp" />
     <ClCompile Include="Source\GLTFImporter.cpp" />
@@ -183,7 +194,6 @@
     <ClCompile Include="Source\RenderState.cpp" />
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Sprite.cpp" />
-    <ClCompile Include="Source\Stage.cpp" />
     <ClCompile Include="Source\TransformUtils.cpp" />
   </ItemGroup>
   <ItemGroup>

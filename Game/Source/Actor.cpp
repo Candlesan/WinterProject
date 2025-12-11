@@ -56,7 +56,9 @@ void Actor::OnGUI()
 	// トランスフォーム
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		ImGui::InputFloat3("Position", &position.x);
+		ImGui::DragFloat3("Position", &position.x, 0.01);
+		ImGui::DragFloat4("Angle", &rotation.x, 1.0f, -360.0f, 360.0f);
+		ImGui::DragFloat3("Scale", &scale.x, 0.01);
 	}
 
 	// コンポーネント

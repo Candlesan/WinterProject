@@ -6,6 +6,7 @@
 #include "Graphics.h"
 #include "ImGuiRenderer.h"
 #include "SceneGame.h"
+#include "Input.h"
 
 // 垂直同期間隔設定
 static const int syncInterval = 1;
@@ -22,8 +23,12 @@ Framework::Framework(HWND hWnd)
 	// IMGUI初期化
 	ImGuiRenderer::Initialize(hWnd, Graphics::Instance().GetDevice(), Graphics::Instance().GetDeviceContext());
 
+	// 入力処理初期化
+	Input::Instance().Initialize(hWnd);
+
 	// シーン初期化
 	sceneGame.Initialize();
+
 }
 
 // デストラクタ
@@ -38,6 +43,9 @@ void Framework::Update(float elapsedTime)
 {
 	// IMGUIフレーム開始処理	
 	ImGuiRenderer::NewFrame();
+
+	// 入力処理更新
+	Input::Instance().Update();
 
 	// シーン更新処理
 	sceneGame.Update(elapsedTime);

@@ -3,6 +3,11 @@
 
 // コンポーネント
 #include "Actor.h"
+#include "MoveComponent.h"
+#include "Camera.h"
+#include "FreeCameraController.h"
+#include "CameraComponent.h"
+#include "Player.h"
 
 
 // 初期化
@@ -12,20 +17,6 @@ void SceneGame::Initialize()
 	float screenWidth = Graphics::Instance().GetScreenWidth();
 	float screenHeight = Graphics::Instance().GetScreenHeight();
 
-	// カメラ設定
-	camera.SetPerspectiveFov(
-		DirectX::XMConvertToRadians(45),	// 画角
-		screenWidth / screenHeight,			// 画面アスペクト比
-		0.1f,								// ニアクリップ
-		1000.0f								// ファークリップ
-	);
-	camera.SetLookAt(
-		DirectX::XMFLOAT3(0, 10, -10), //視点
-		DirectX::XMFLOAT3(0, 0, 0), //注視点
-		DirectX::XMFLOAT3(0, 1, 0) //上方向
-	);
-	cameraController.SyncCameraToController(camera);
-
 	// ステージモデルの初期化
 	{
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
@@ -33,15 +24,23 @@ void SceneGame::Initialize()
 		actor->SetName("Stage");
 		actor->SetPosition({ 0, 0, 0 });
 	}
+	// プレイヤーの初期化
+	{
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->LoadModel(device, "Data/Model/unitychan/unitychan.glb");
+		actor->SetName("Player");
+		actor->SetPosition({ 0, 0, 0 });
+		actor->SetRotation({ 0, 0, 0, 1 });
+		actor->SetScale({ 1, 1, 1 });
+		actor->AddComponent<Player>();
+		actor->AddComponent<MoveComponent>();
+		actor->AddComponent<CameraComponent>();
+	}
 }
 
 // 更新処理
 void SceneGame::Update(float elapsedTime)
 {
-	// カメラ更新処理
-	cameraController.Update();
-	cameraController.SyncControllerToCamera(camera);
-
 	// すべてのアクターを更新する
 	ActorManager::Instance().Update(elapsedTime);
 
@@ -61,6 +60,8 @@ void SceneGame::Render()
 	dc->OMSetBlendState(renderState->GetBlendState(BlendState::Opaque), nullptr, 0xFFFFFFFF);
 	dc->OMSetDepthStencilState(renderState->GetDepthStencilState(DepthState::TestAndWrite), 0);
 	dc->RSSetState(renderState->GetRasterizerState(RasterizerState::SolidCullNone));
+
+	Camera& camera = CameraManager::Instance().GetMainCamera();
 
 	// 描画コンテキスト設定
 	RenderContext rc;

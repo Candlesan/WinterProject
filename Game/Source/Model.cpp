@@ -192,7 +192,10 @@ void Model::Animation::serialize(Archive& archive)
 
 // コンストラクタ
 Model::Model(ID3D11Device* device, const char* filename, float sampleRate)
+	:modelName(filename)
 {
+	OutputDebugStringA(("[Model Created] " + modelName + "\n").c_str());
+
 	std::filesystem::path filepath(filename);
 	std::filesystem::path dirpath(filepath.parent_path());
 
@@ -343,6 +346,11 @@ Model::Model(ID3D11Device* device, const char* filename, float sampleRate)
 	DirectX::XMFLOAT4X4 worldTransform;
 	DirectX::XMStoreFloat4x4(&worldTransform, DirectX::XMMatrixIdentity());
 	UpdateTransform(worldTransform);
+}
+
+Model::~Model()
+{
+	OutputDebugStringA(("[Model Destroyed] " + modelName + "\n").c_str());
 }
 
 // アニメーション追加読み込み
