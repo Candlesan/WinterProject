@@ -188,6 +188,13 @@ public:
 	// ノードポーズ取得
 	void GetNodePoses(std::vector<NodePose>& nodePoses) const;
 
+	// アニメーション補間処理
+	static void BlendAnimations(
+		const std::vector<NodePose>& animation0,
+		const std::vector<NodePose>& animation1,
+		float blendRate,
+		std::vector<NodePose>& result);
+
 private:
 	// シリアライズ
 	void Serialize(const char* filename);
