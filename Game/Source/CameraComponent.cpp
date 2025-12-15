@@ -13,7 +13,8 @@ void CameraComponent::Start()
 // 更新
 void CameraComponent::Update(float elapsedTime)
 {
-	if (!target) return;
+    std::shared_ptr<Actor> actor = target.lock();
+	if (!actor) return;
 
 	GamePad& gamePad = Input::Instance().GetGamePad();
 
@@ -51,7 +52,7 @@ void CameraComponent::Update(float elapsedTime)
     }
 
     // カメラの始点と注視点を計算
-    DirectX::XMVECTOR TargetPos = DirectX::XMLoadFloat3(&target->GetPosition());
+    DirectX::XMVECTOR TargetPos = DirectX::XMLoadFloat3(&actor->GetPosition());
     DirectX::XMVECTOR OffsetVec = DirectX::XMLoadFloat3(&offset);
     DirectX::XMVECTOR Focus = DirectX::XMVectorAdd(TargetPos, OffsetVec);
 

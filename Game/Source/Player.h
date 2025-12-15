@@ -10,7 +10,7 @@ class Player : public Component
 {
 public:
 	Player() {};
-	~Player() {};
+	~Player();
 
 	// –¼‘O‚ðŽæ“¾
 	const char* GetName() const override { return "Player"; }

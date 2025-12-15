@@ -4,7 +4,12 @@
 #include <imgui.h>
 
 
-// コンストラクタ
+// デストラクタ
+Player::~Player()
+{
+}
+
+// 開始処理
 void Player::Start()
 {
 	moveComponent = GetActor()->GetComponent<MoveComponent>();
@@ -15,6 +20,7 @@ void Player::Start()
 		cameraComponent->SetDistance(5.0f);
 		cameraComponent->SetOffset({ 0, 1.8f, 0 });
 	}
+	// ModelとPlayerが循環参照してる可能性がある!
 	GetActor()->GetModel()->GetNodePoses(nodePoses);
 	GetActor()->GetModel()->GetNodePoses(oldNodePoses);
 	int a = 0;
