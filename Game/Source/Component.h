@@ -25,7 +25,7 @@ public:
 	void SetActor(std::shared_ptr<Actor> actor) { this->actor = actor; }
 
 	// アクター取得
-	std::shared_ptr<Actor> GetActor() { return actor.lock(); }
+	std::shared_ptr<Actor> GetActor() const { return actor.lock(); }
 
 private:
 	std::weak_ptr<Actor> actor;

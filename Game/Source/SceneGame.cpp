@@ -1,12 +1,14 @@
 #include "SceneGame.h"
 #include "Graphics.h"
 
+#include "Camera.h"
+#include "FreeCameraController.h"
+
 // コンポーネント
 #include "Actor.h"
 #include "MoveComponent.h"
-#include "Camera.h"
-#include "FreeCameraController.h"
 #include "CameraComponent.h"
+#include "CollisionManager.h"
 #include "Player.h"
 
 
@@ -35,6 +37,19 @@ void SceneGame::Initialize()
 		actor->AddComponent<Player>();
 		actor->AddComponent<MoveComponent>();
 		actor->AddComponent<CameraComponent>();
+
+		// 円柱の衝突判定を設定
+		std::shared_ptr<CollisionComponent> collision = actor->AddComponent<CollisionComponent>();
+		collision->SetCylinder(0.5f, 0.5);
+	}
+	// エネミー初期化
+	{
+		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
+		actor->LoadModel(device, "Data/Model/RPG-Character/RPG-Character.glb");
+		actor->SetName("Enemy");
+		actor->SetPosition({ 0, 0, 10 });
+		std::shared_ptr<CollisionComponent> collision = actor->AddComponent<CollisionComponent>();
+		collision->SetCylinder(0.5f, 0.5);
 	}
 }
 
@@ -43,6 +58,9 @@ void SceneGame::Update(float elapsedTime)
 {
 	// すべてのアクターを更新する
 	ActorManager::Instance().Update(elapsedTime);
+
+	// 衝突判定を一括更新
+	CollisionManager::Instance().Update();
 
 	// すべてのアクターのモデルのワールド行列を更新
 	ActorManager::Instance().UpdateTransform();
@@ -75,10 +93,11 @@ void SceneGame::Render()
 		ActorManager::Instance().Render(camera.GetView(), camera.GetProjection());
 		modelRenderer->Render(rc);
 	}
+
+	CollisionManager::Instance().DrawGUI(rc);
 }
 
 // GUI描画
 void SceneGame::DrawGUI()
 {
-
 }

@@ -128,6 +128,8 @@
     <ClInclude Include="Source\BasicShader.h" />
     <ClInclude Include="Source\Camera.h" />
     <ClInclude Include="Source\CameraComponent.h" />
+    <ClInclude Include="Source\CollisionComponent.h" />
+    <ClInclude Include="Source\CollisionManager.h" />
     <ClInclude Include="Source\Component.h" />
     <ClInclude Include="Source\Dialog.h" />
     <ClInclude Include="Source\Framework.h" />
@@ -172,6 +174,8 @@
     <ClCompile Include="Source\BasicShader.cpp" />
     <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\CameraComponent.cpp" />
+    <ClCompile Include="Source\CollisionComponent.cpp" />
+    <ClCompile Include="Source\CollisionManager.cpp" />
     <ClCompile Include="Source\Dialog.cpp" />
     <ClCompile Include="Source\Framework.cpp" />
     <ClCompile Include="Source\FreeCameraController.cpp" />

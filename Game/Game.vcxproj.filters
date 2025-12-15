@@ -43,6 +43,9 @@
     <Filter Include="Source\Move">
       <UniqueIdentifier>{efec60b1-eef3-43ce-9e08-776eae4e5a0c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Collision">
+      <UniqueIdentifier>{a2c076c6-fd47-4740-be27-0031692033ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="External\imgui-docking\imconfig.h">
@@ -180,6 +183,12 @@
     <ClInclude Include="Source\Player.h">
       <Filter>Source\Player</Filter>
     </ClInclude>
+    <ClInclude Include="Source\CollisionComponent.h">
+      <Filter>Source\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\CollisionManager.h">
+      <Filter>Source\Collision</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui-docking\imgui.cpp">
@@ -292,6 +301,12 @@
     </ClCompile>
     <ClCompile Include="Source\Player.cpp">
       <Filter>Source\Player</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CollisionComponent.cpp">
+      <Filter>Source\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\CollisionManager.cpp">
+      <Filter>Source\Collision</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
