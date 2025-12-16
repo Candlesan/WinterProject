@@ -23,7 +23,7 @@ public:
 	void SetDistance(float dist) { this->distance = dist; }
 
 private:
-	std::weak_ptr<Actor> target; //
+	std::weak_ptr<Actor> target; 
 	DirectX::XMFLOAT3 offset = { 0, 1.8, 0 };
 	DirectX::XMFLOAT3 angle = { 0, 0, 0 };
 	float distance = 5.0f;

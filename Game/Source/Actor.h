@@ -62,6 +62,15 @@ public:
 	// モデルの取得
 	std::shared_ptr<Model> GetModel() const { return model; }
 
+	// 移動ベクトルを取得
+	DirectX::XMFLOAT3 GetMoveVec() const;
+
+	// 当たり判定の半径取得
+	float GetRadius() { return radius; }
+
+	// 当たり判定の半径設定
+	void SetRadius(float rad) { radius = rad; }
+
 	// コンポーネント追加
 	template<class T, class... Args>
 	std::shared_ptr<T> AddComponent(Args... args) // args...:任意の引数にするためのテンプレートパラメーターパック
@@ -99,6 +108,8 @@ private:
 		0, 0, 0, 1,
 	};
 
+	float radius = 0.0f;
+
 	std::shared_ptr<Model> model;
 
 	std::vector<std::shared_ptr<Component>> components;
@@ -132,6 +143,9 @@ public:
 
 	// 描画
 	void Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& prorjection);
+
+	// 指定のアクターを検索
+	std::shared_ptr<Actor> FindActorName(const char* name);
 private:
 	void DrawLister();
 	void DrawDetail();

@@ -1,73 +1,109 @@
+#include "Enemy.h"
+#include "Mathf.h"
 #include "Player.h"
-#include "Graphics.h"
-#include "Camera.h"
+#include "BehaviorTree.h"
+#include "BehaviorData.h"
+#include "NodeBase.h"
+#include "ActionDerived.h"
+#include "JudgmentDerived.h"
 #include <imgui.h>
 
-
-// デストラクタ
-Player::~Player()
-{
-}
-
 // 開始処理
-void Player::Start()
+void Enemy::Start()
 {
 	moveComponent = GetActor()->GetComponent<MoveComponent>();
-	cameraComponent = GetActor()->GetComponent<CameraComponent>();
-	if (cameraComponent)
-	{
-		cameraComponent->SetTarget(GetActor()); // 自身のアクターを渡す
-		cameraComponent->SetDistance(5.0f);
-		cameraComponent->SetOffset({ 0, 1.8f, 0 });
-	}
+
+	// ビヘイビアツリー設定
+	//behaviorData = new BehaviorData();
+	//aiTree = new BehaviorTree(this);
+
+	// Root
+	//aiTree->AddNode("", "Root", 0, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+
+	// Battle
+	//aiTree->AddNode("Root", "Battle", 2, BehaviorTree::SelectRule::Priority, new BattleJudgment(this), nullptr);
+	//aiTree->AddNode("Battle", "Pursuit", 2, BehaviorTree::SelectRule::Non, nullptr, new PursuitAction(this));
+
+	// Attack
+	//aiTree->AddNode("Battle", "Attack", 1, BehaviorTree::SelectRule::Priority, new AttackJudgment(this), nullptr);
+	//aiTree->AddNode("Attack", "Normal", 1, BehaviorTree::SelectRule::Non, new AttackJudgment(this), new AttackAction(this));
+
+	// Scout
+	//aiTree->AddNode("Root", "Scout", 3, BehaviorTree::SelectRule::Priority, nullptr, nullptr);
+	//aiTree->AddNode("Scout", "Wander", 1, BehaviorTree::SelectRule::Non, new WanderJudgment(this), new WanderAction(this));
+	//aiTree->AddNode("Scout", "Idle", 2, BehaviorTree::SelectRule::Non, nullptr, new IdleAction(this));
+
 	// ModelとPlayerが循環参照してる可能性がある!
 	GetActor()->GetModel()->GetNodePoses(nodePoses);
 	GetActor()->GetModel()->GetNodePoses(oldNodePoses);
+
+	state = State::Idle;
 }
 
 // 更新処理
-void Player::Update(float elapsedTime)
+void Enemy::Update(float elapsedTime)
 {
-	CharacterControl(elapsedTime);
+	// 現在実行されているノードが無ければ
+	//if (activeNode == nullptr)
+	//{
+	//	// 次に実行するノードを推論する。
+	//	activeNode = aiTree->ActiveNodeInference(behaviorData);
+	//}
+	// 現在実行するノードがあれば
+	//if (activeNode != nullptr)
+	//{
+	//	// ビヘイビアツリーからノードを実行。
+	//	activeNode = aiTree->Run(activeNode, behaviorData, elapsedTime);
+	//}
+
 	UpdateAnimation(elapsedTime);
 }
 
-// アニメーション更新処理
-void Player::UpdateAnimation(float elapsedTime)
+// GUI描画
+void Enemy::OnGUI()
 {
-	GamePad& gamePad = Input::Instance().GetGamePad();
-	DirectX::XMFLOAT3 moveVec = GetActor()->GetMoveVec();
-	float moveLength = sqrtf(moveVec.x * moveVec.x + moveVec.y * moveVec.y + moveVec.z * moveVec.z);
+	//std::string str = "";
+	//if (activeNode != nullptr)
+	//{
+	//	str = activeNode->GetName();
+	//}
 
+	//ImGui::Text("Behavior %s", str.c_str());
+	ImGui::Separator();
+
+	if (ImGui::CollapsingHeader("Territory", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::Text("TargetPosition : %f, %f, %f", targetPosition.x, targetPosition.y, targetPosition.z);
+		ImGui::DragFloat3("TerritoryOrigin", &territoryOrigin.x, 0.01f);
+		ImGui::DragFloat("TerritoryOrigin", &territoryRange, 0.01f);
+	}
+}
+
+// アニメーション更新
+void Enemy::UpdateAnimation(float elapsedTime)
+{
 	int newAnimationIndex = animationIndex;
 
 	switch (state)
 	{
-	case Player::State::Idle:
+	case State::Idle:
 		animationLoop = true;
 		useRootMotion = false;
 		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("Idle");
 
-		if (moveLength > 0.01f)
-		{
-			state = State::Run;
-		}
-
 		break;
-	case Player::State::Walk:
-		break;
-	case Player::State::Run:
+	case State::Walk:
 		animationLoop = true;
 		useRootMotion = false;
-		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("RunForwardInPlace");
-
-		if (moveLength < 0.01f)
-		{
-			state = State::Idle;
-		}
+		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("Walk_F");
 
 		break;
-	case Player::State::Attack:
+	case State::Run:
+		break;
+	case State::Attack:
+		animationLoop = false;
+		useRootMotion = false;
+		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("Slash");
 		break;
 	}
 
@@ -124,7 +160,7 @@ void Player::UpdateAnimation(float elapsedTime)
 		if (useRootMotion)
 		{
 			// ルートモーションノード番号取得
-			const int rootMotionNodeIndex = GetActor()->GetModel()->GetNodeIndex("Character1_Hips");
+			const int rootMotionNodeIndex = GetActor()->GetModel()->GetNodeIndex("B_Pelvis");
 
 			// 初回、前回、今回のルートモーションの姿勢を取得
 			Model::NodePose beginPose, oldPose, newPose;
@@ -221,22 +257,95 @@ void Player::UpdateAnimation(float elapsedTime)
 	}
 }
 
-// プレイヤーコントローラー
-void Player::CharacterControl(float elapsedTime)
+// 縄張り設定 
+void Enemy::SetTerritory(const DirectX::XMFLOAT3& origin, float range)
 {
-	GamePad& gamePad = Input::Instance().GetGamePad();
+	territoryOrigin = origin;
+	territoryRange = range;
+}
 
-	//進行ベクトル取得
-	DirectX::XMFLOAT3 moveVec = GetActor()->GetMoveVec();
+// ターゲット位置をランダム設定
+void Enemy::SetRandomTargetPosition()
+{
+	float theta = Mathf::RandomRange(-DirectX::XM_PI, DirectX::XM_PI);
+	float range = Mathf::RandomRange(0.0f, territoryRange);
+	targetPosition.x = territoryOrigin.x + sinf(theta) * range;
+	targetPosition.y = territoryOrigin.y;
+	targetPosition.z = territoryOrigin.z + cosf(theta) * range;
+}
 
-	//旋回処理
-	moveComponent->Turn(moveVec, elapsedTime);
+// 目標地点へ移動
+void Enemy::MoveToTarget(float elapsedTime, float speedRate)
+{
+	std::shared_ptr<Actor> actor = GetActor();
+	DirectX::XMFLOAT3 position = actor->GetPosition();
 
-	//移動処理
-	moveComponent->Move(elapsedTime, moveVec.x, moveVec.z);
+	// ターゲット方向への進行ベクトルを算出
+	float vx = targetPosition.x - position.x;
+	float vz = targetPosition.z - position.z;
+	float dist = sqrtf(vx * vx + vz * vz);
+	vx /= dist;
+	vz /= dist;
 
-	if (gamePad.GetButtonDown() & GamePad::BTN_SPACE)
+	// 移動処理
+	moveComponent->Move(vx, vz, moveSpeed * speedRate);
+	moveComponent->Turn({vx, 0.0f, vz}, elapsedTime);
+}
+
+// プレイヤー索敵
+bool Enemy::SearchPlayer()
+{
+	// プレイヤーとの高低差を考慮して3Dで距離判定をする
+	std::shared_ptr<Actor> actor = GetActor();
+	DirectX::XMFLOAT3 EnemyPosition = actor->GetPosition();
+
+	std::shared_ptr<Actor> playerActor = ActorManager::Instance().FindActorName("Player");
+	if (!playerActor) return false;
+
+	// プレイヤーの位置
+	DirectX::XMFLOAT3 playerPos = playerActor->GetPosition();
+
+	float vx = playerPos.x - EnemyPosition.x;
+	float vy = playerPos.y - EnemyPosition.y;
+	float vz = playerPos.z - EnemyPosition.z;
+	float dist = sqrtf(vx * vx + vy * vy + vz * vz);
+
+	if (dist < searchRange)
 	{
-		moveComponent->Jump();
+		float distXZ = sqrtf(vx * vx + vz * vz);
+
+		// 単位ベクトル化
+		vx /= distXZ;
+		vz /= distXZ;
+
+		DirectX::XMFLOAT4 rotation = actor->GetRotation();
+
+		// クォータニオンから前方向ベクトルを計算
+		DirectX::XMVECTOR Rotation = DirectX::XMLoadFloat4(&rotation);
+		DirectX::XMVECTOR Forward = DirectX::XMVectorSet(0, 0, 1, 0);
+		Forward = DirectX::XMVector3Rotate(Forward, Rotation);
+
+		DirectX::XMFLOAT3 forward;
+		DirectX::XMStoreFloat3(&forward, Forward);
+
+		// 2つのベクトルの内積値で前後判定
+		float dot = (forward.x * vx) + (forward.z * vz);
+		if (dot > 0.0f)
+		{
+			return true;
+		}
 	}
+	return false;
+}
+
+// アニメーションが終了したか
+bool Enemy::FinshedAnimation()
+{
+	const Model::Animation& animation = GetActor()->GetModel()->GetAnimations().at(animationIndex);
+
+	if (animationSeconds >= animation.secondsLength)
+	{
+		return true;
+	}
+	return false;
 }

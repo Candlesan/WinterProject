@@ -10,6 +10,7 @@
 #include "CameraComponent.h"
 #include "CollisionManager.h"
 #include "Player.h"
+#include "Enemy.h"
 
 
 // ‰Šú‰»
@@ -48,8 +49,13 @@ void SceneGame::Initialize()
 		actor->LoadModel(device, "Data/Model/RPG-Character/RPG-Character.glb");
 		actor->SetName("Enemy");
 		actor->SetPosition({ 0, 0, 10 });
+		std::shared_ptr<Enemy> enemy = actor->AddComponent<Enemy>();
+		actor->AddComponent<MoveComponent>();
+
+		// ‰~’Œ‚ÌÕ“Ë”»’è‚ğİ’è
 		std::shared_ptr<CollisionComponent> collision = actor->AddComponent<CollisionComponent>();
 		collision->SetCylinder(0.5f, 0.5);
+
 	}
 }
 

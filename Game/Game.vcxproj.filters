@@ -46,6 +46,15 @@
     <Filter Include="Source\Collision">
       <UniqueIdentifier>{a2c076c6-fd47-4740-be27-0031692033ff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Enemy">
+      <UniqueIdentifier>{811befd4-e77e-49b8-becb-bdc29bc43d02}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\BehaviorTree">
+      <UniqueIdentifier>{84b56789-7e9b-4f1f-a173-9e9a7ee002b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\BehaviorTree\Base">
+      <UniqueIdentifier>{7674e709-2955-4460-b6cf-7c5919f48975}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="External\imgui-docking\imconfig.h">
@@ -189,6 +198,33 @@
     <ClInclude Include="Source\CollisionManager.h">
       <Filter>Source\Collision</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Enemy.h">
+      <Filter>Source\Enemy</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ActionDerived.h">
+      <Filter>Source\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\ActionBase.h">
+      <Filter>Source\BehaviorTree\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BehaviorData.h">
+      <Filter>Source\BehaviorTree\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\BehaviorTree.h">
+      <Filter>Source\BehaviorTree\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\NodeBase.h">
+      <Filter>Source\BehaviorTree\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\JudgmentBase.h">
+      <Filter>Source\BehaviorTree\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\JudgmentDerived.h">
+      <Filter>Source\BehaviorTree</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Mathf.h">
+      <Filter>Source\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui-docking\imgui.cpp">
@@ -307,6 +343,27 @@
     </ClCompile>
     <ClCompile Include="Source\CollisionManager.cpp">
       <Filter>Source\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Enemy.cpp">
+      <Filter>Source\Enemy</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BehaviorData.cpp">
+      <Filter>Source\BehaviorTree\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\BehaviorTree.cpp">
+      <Filter>Source\BehaviorTree\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\NodeBase.cpp">
+      <Filter>Source\BehaviorTree\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\ActionDerived.cpp">
+      <Filter>Source\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Mathf.cpp">
+      <Filter>Source\System</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\JudgmentDerived.cpp">
+      <Filter>Source\BehaviorTree</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

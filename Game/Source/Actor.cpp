@@ -2,6 +2,7 @@
 #include "Graphics.h"
 #include "Component.h"
 #include "Actor.h";
+#include "Input.h"
 
 // 開始処理
 void Actor::Start()
@@ -38,6 +39,55 @@ void Actor::UpdateTransform()
 	{
 		model->UpdateTransform(transform);
 	}
+}
+
+// 移動ベクトルを取得
+DirectX::XMFLOAT3 Actor::GetMoveVec() const
+{
+	//入力情報を取得
+	GamePad& gamePad = Input::Instance().GetGamePad();
+	float ax = gamePad.GetAxisLX();
+	float ay = gamePad.GetAxisLY();
+
+	//カメラ方向とスティックの入力値によって進行方向を計算する
+	Camera& camera = CameraManager::Instance().GetMainCamera();
+	const DirectX::XMFLOAT3& cameraRight = camera.GetRight();
+	const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
+
+	//移動ベクトルはXZ平面に水平なベクトルにする
+
+	//カメラ右方向ベクトルをXZ単位ベクトルに変換
+	float cameraRightX = cameraRight.x;
+	float cameraRightZ = cameraRight.z;
+	float cameraRightLength = sqrtf(cameraRightX * cameraRightX + cameraRightZ * cameraRightZ);
+	if (cameraRightLength > 0.0f)
+	{
+		//単位ベクトル化 
+		cameraRightX /= cameraRightLength;
+		cameraRightZ /= cameraRightLength;
+	}
+
+	//カメラ前方向ベクトルをXZ単位ベクトルに変換
+	float cameraFrontX = cameraFront.x;
+	float cameraFrontZ = cameraFront.z;
+	float cameraFrontLength = sqrtf(cameraFrontX * cameraFrontX + cameraFrontZ * cameraFrontZ);
+	if (cameraFrontLength > 0.0f)
+	{
+		//単位ベクトル化 
+		cameraFrontX /= cameraFrontLength;
+		cameraFrontZ /= cameraFrontLength;
+	}
+
+	//スティックの水平入力値をカメラ右方向に反映し、
+	//スティックの垂直入力値をカメラ前方向に反映し、
+	//進行ベクトルを計算する
+	DirectX::XMFLOAT3 vec;
+	vec.x = (cameraRightX * ax) + (cameraFrontX * ay);
+	vec.z = (cameraRightZ * ax) + (cameraFrontZ * ay);
+	//Y軸方向には移動しない
+	vec.y = 0.0f;
+
+	return vec;
 }
 
 // GUI表示
@@ -176,6 +226,19 @@ void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOA
 
 	// 詳細描画
 	DrawDetail();
+}
+
+// 指定のアクターを検索
+std::shared_ptr<Actor> ActorManager::FindActorName(const char* name)
+{
+	for (std::shared_ptr<Actor>& actor : updateActors)
+	{
+		if (strcmp(actor->GetName(), name) == 0)
+		{
+			return actor;
+		}
+	}
+	return nullptr;
 }
 
 // リスター描画
