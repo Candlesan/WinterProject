@@ -46,13 +46,17 @@ void CollisionManager::Update()
 			// 衝突判定実行
 			if (collisionA->Intersect(collisionB, outPosition))
 			{
-				// 衝突した場合、押し出し処理
-				std::shared_ptr<Actor> actorB = collisionB->GetActor();
-				actorB->SetPosition(outPosition);
-
 				// 衝突イベントを呼ぶ
 				collisionA->OnCollision(collisionB);
 				collisionB->OnCollision(collisionA);
+
+				// 押し出し処理は両方とも「トリガーではない」時のみ実行
+				if (!collisionA->IsTrigger() && !collisionB->IsTrigger())
+				{
+					// 衝突した場合、押し出し処理
+					std::shared_ptr<Actor> actorB = collisionB->GetActor();
+					actorB->SetPosition(outPosition);
+				}
 			}
 		}
 	}

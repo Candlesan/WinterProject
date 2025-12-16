@@ -55,6 +55,9 @@
     <Filter Include="Source\BehaviorTree\Base">
       <UniqueIdentifier>{7674e709-2955-4460-b6cf-7c5919f48975}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\WeaponComponent">
+      <UniqueIdentifier>{fd269b2e-f2ed-4f9e-b51c-cf4cb5c5dc38}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="External\imgui-docking\imconfig.h">
@@ -225,6 +228,9 @@
     <ClInclude Include="Source\Mathf.h">
       <Filter>Source\System</Filter>
     </ClInclude>
+    <ClInclude Include="Source\WeaponConponent.h">
+      <Filter>Source\WeaponComponent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui-docking\imgui.cpp">
@@ -364,6 +370,9 @@
     </ClCompile>
     <ClCompile Include="Source\JudgmentDerived.cpp">
       <Filter>Source\BehaviorTree</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\WeaponComponent.cpp">
+      <Filter>Source\WeaponComponent</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

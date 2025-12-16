@@ -38,7 +38,7 @@ public:
 
 	void SetSphere(float radius)
 	{
-		collisionType = CollisionType::Cylinder;
+		collisionType = CollisionType::Sphere;
 		this->radius = radius;
 		this->height = radius * 2.0f; // 球の高さは直径 : d = r * r
 	};
@@ -56,6 +56,12 @@ public:
 
 	// 衝突時のコールバック（必要に応じてオーバーライド）
 	virtual void  OnCollision(std::shared_ptr<CollisionComponent> other) {}
+
+	// トリガーフラグを設定する 
+	void SetTrigger(bool flag) { this->isTrigger = flag; }
+
+	// トリガー状態を取得する関数
+	bool IsTrigger() const { return isTrigger; }
 
 private:
 	//球と球の交差判定
@@ -81,4 +87,5 @@ private:
 	CollisionType collisionType = CollisionType::Cylinder;
 	float radius = 0.5f;
 	float height = 2.0f;
+	bool isTrigger = false; // false:　物理的な処突/ true: 物理的な衝突なしに通過し、衝突イベントのみ検出
 };

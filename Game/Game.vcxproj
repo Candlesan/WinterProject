@@ -167,6 +167,7 @@
     <ClInclude Include="Source\Shader.h" />
     <ClInclude Include="Source\Sprite.h" />
     <ClInclude Include="Source\TransformUtils.h" />
+    <ClInclude Include="Source\WeaponConponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui-docking\imgui.cpp" />
@@ -215,6 +216,7 @@
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Sprite.cpp" />
     <ClCompile Include="Source\TransformUtils.cpp" />
+    <ClCompile Include="Source\WeaponComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Basic.hlsli" />

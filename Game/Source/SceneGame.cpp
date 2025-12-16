@@ -11,6 +11,7 @@
 #include "CollisionManager.h"
 #include "Player.h"
 #include "Enemy.h"
+#include "WeaponConponent.h"
 
 
 // 初期化
@@ -29,19 +30,38 @@ void SceneGame::Initialize()
 	}
 	// プレイヤーの初期化
 	{
-		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->LoadModel(device, "Data/Model/unitychan/unitychan.glb");
-		actor->SetName("Player");
-		actor->SetPosition({ 0, 0, 0 });
-		actor->SetRotation({ 0, 0, 0, 1 });
-		actor->SetScale({ 1, 1, 1 });
-		actor->AddComponent<Player>();
-		actor->AddComponent<MoveComponent>();
-		actor->AddComponent<CameraComponent>();
+		std::shared_ptr<Actor> player = ActorManager::Instance().Create();
+		player->LoadModel(device, "Data/Model/unitychan/unitychan.glb");
+		player->SetName("Player");
+		player->SetPosition({ 0, 0, 0 });
+		player->SetRotation({ 0, 0, 0, 1 });
+		player->SetScale({ 1, 1, 1 });
+		player->AddComponent<Player>();
+		player->AddComponent<MoveComponent>();
+		player->AddComponent<CameraComponent>();
 
 		// 円柱の衝突判定を設定
-		std::shared_ptr<CollisionComponent> collision = actor->AddComponent<CollisionComponent>();
+		std::shared_ptr<CollisionComponent> collision = player->AddComponent<CollisionComponent>();
 		collision->SetCylinder(0.5f, 0.5);
+
+		// 武器
+		std::shared_ptr<Actor> weapon = ActorManager::Instance().Create();
+		weapon->LoadModel(device, "Data/Model/Weapon/Sword.glb");
+		weapon->SetName("PlayerWeapon");
+
+		// 攻撃判定
+		std::shared_ptr<Actor> weaponHit = ActorManager::Instance().Create();
+		weaponHit->SetName("PlayerWeaponHit");
+		std::shared_ptr<CollisionComponent> weaponCollision = weaponHit->AddComponent<CollisionComponent>();
+		weaponCollision->SetSphere(0.5f);
+		weaponCollision->SetTrigger(true);
+
+		// 武器の見た目
+		std::shared_ptr<WeaponComponent> weaponComp = weapon->AddComponent<WeaponComponent>();
+		weaponComp->SetParentActor(player);
+		weaponComp->SetAttachBoneName("Character1_RightHand");
+		weaponComp->SetLocalScale({ 0.01f, 0.01f, 0.01f });
+		weaponComp->SetHitActor(weaponHit);
 	}
 	// エネミー初期化
 	{
