@@ -6,12 +6,13 @@
 
 // コンポーネント
 #include "Actor.h"
-#include "MoveComponent.h"
 #include "CameraComponent.h"
-#include "CollisionManager.h"
 #include "Player.h"
 #include "Enemy.h"
-#include "WeaponConponent.h"
+#include "MoveComponent.h"
+#include "CollisionManager.h"
+#include "WeaponCollision.h"
+#include "HealthComponent.h"
 
 
 // 初期化
@@ -31,37 +32,30 @@ void SceneGame::Initialize()
 	// プレイヤーの初期化
 	{
 		std::shared_ptr<Actor> player = ActorManager::Instance().Create();
-		player->LoadModel(device, "Data/Model/unitychan/unitychan.glb");
+		player->LoadModel(device, "Data/Model/unitychan/assassin.gltf");
 		player->SetName("Player");
 		player->SetPosition({ 0, 0, 0 });
 		player->SetRotation({ 0, 0, 0, 1 });
-		player->SetScale({ 1, 1, 1 });
+		player->SetScale({ 0.01f, 0.01f, 0.01f });
 		player->AddComponent<Player>();
 		player->AddComponent<MoveComponent>();
 		player->AddComponent<CameraComponent>();
+
+		// 体力を設定
+		std::shared_ptr<HealthComponent> health = player->AddComponent<HealthComponent>();
+		health->SetHealth(5);
+		health->SetMaxHealth(5);
 
 		// 円柱の衝突判定を設定
 		std::shared_ptr<CollisionComponent> collision = player->AddComponent<CollisionComponent>();
 		collision->SetCylinder(0.5f, 0.5);
 
-		// 武器
-		std::shared_ptr<Actor> weapon = ActorManager::Instance().Create();
-		weapon->LoadModel(device, "Data/Model/Weapon/Sword.glb");
-		weapon->SetName("PlayerWeapon");
-
-		// 攻撃判定
-		std::shared_ptr<Actor> weaponHit = ActorManager::Instance().Create();
-		weaponHit->SetName("PlayerWeaponHit");
-		std::shared_ptr<CollisionComponent> weaponCollision = weaponHit->AddComponent<CollisionComponent>();
-		weaponCollision->SetSphere(0.5f);
-		weaponCollision->SetTrigger(true);
-
-		// 武器の見た目
-		std::shared_ptr<WeaponComponent> weaponComp = weapon->AddComponent<WeaponComponent>();
-		weaponComp->SetParentActor(player);
-		weaponComp->SetAttachBoneName("Character1_RightHand");
-		weaponComp->SetLocalScale({ 0.01f, 0.01f, 0.01f });
-		weaponComp->SetHitActor(weaponHit);
+		std::shared_ptr<Actor> weponActor = ActorManager::Instance().Create();
+		weponActor->SetName("Weapon");
+		// 武器用アクターには専用のコリジョンをつける
+		auto weaponCollistion = weponActor->AddComponent<WeaponCollision>();
+		weaponCollistion->SetSphere(0.5f);
+		weaponCollistion->SetTrigger(true);
 	}
 	// エネミー初期化
 	{
@@ -72,10 +66,14 @@ void SceneGame::Initialize()
 		std::shared_ptr<Enemy> enemy = actor->AddComponent<Enemy>();
 		actor->AddComponent<MoveComponent>();
 
+		// 体力を設定
+		std::shared_ptr<HealthComponent> health = actor->AddComponent<HealthComponent>();
+		health->SetHealth(5);
+		health->SetMaxHealth(5);
+
 		// 円柱の衝突判定を設定
 		std::shared_ptr<CollisionComponent> collision = actor->AddComponent<CollisionComponent>();
 		collision->SetCylinder(0.5f, 0.5);
-
 	}
 }
 
@@ -121,6 +119,9 @@ void SceneGame::Render()
 	}
 
 	CollisionManager::Instance().DrawGUI(rc);
+
+	ShapeRenderer* shapeRenderer = Graphics::Instance().GetShapeRenderer();
+	shapeRenderer->Render(dc, camera.GetView(), camera.GetProjection());
 }
 
 // GUI描画

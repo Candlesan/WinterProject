@@ -34,12 +34,6 @@ public:
 	//着地した時に呼ばれる
 	virtual void OnLanding() {}
 
-	//ダメージを受けた時に呼ばれる
-	virtual void OnDamage() {}
-
-	//死亡したと時に呼ばれる
-	virtual void OnDead() {}
-
 private:
 	//垂直速力更新処理
 	void UpdateVerticalVelocity(float elapsedTime);

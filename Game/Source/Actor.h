@@ -55,6 +55,7 @@ public:
 
 	// 行列の取得
 	const DirectX::XMFLOAT4X4& GetTransform() const { return transform; }
+	void SetTransform(DirectX::XMFLOAT4X4 Transform) { transform = Transform; }
 
 	// モデルの読み込み
 	void LoadModel(ID3D11Device* device ,const char* filename);
@@ -71,6 +72,10 @@ public:
 	// 当たり判定の半径設定
 	void SetRadius(float rad) { radius = rad; }
 
+	// 攻撃中か
+	void SetAttacking(bool attaking) { isAttacking = attaking; }
+	bool IsAttacking() const { return isAttacking; }
+
 	// コンポーネント追加
 	template<class T, class... Args>
 	std::shared_ptr<T> AddComponent(Args... args) // args...:任意の引数にするためのテンプレートパラメーターパック
@@ -82,6 +87,7 @@ public:
 		components.emplace_back(component);
 		return component;
 	}
+
 
 	// コンポーネント取得
 	template<class T>
@@ -109,6 +115,7 @@ private:
 	};
 
 	float radius = 0.0f;
+	bool isAttacking = false;
 
 	std::shared_ptr<Model> model;
 

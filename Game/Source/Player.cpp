@@ -1,38 +1,89 @@
-#include "Player.h"
+ï»¿#include "Player.h"
 #include "Graphics.h"
 #include "Camera.h"
+#include "WeaponCollision.h"
 #include <imgui.h>
 
 
-// ƒfƒXƒgƒ‰ƒNƒ^
-Player::~Player()
-{
-}
-
-// ŠJnˆ—
+// é–‹å§‹å‡¦ç†
 void Player::Start()
 {
 	moveComponent = GetActor()->GetComponent<MoveComponent>();
 	cameraComponent = GetActor()->GetComponent<CameraComponent>();
+
 	if (cameraComponent)
 	{
-		cameraComponent->SetTarget(GetActor()); // ©g‚ÌƒAƒNƒ^[‚ğ“n‚·
+		cameraComponent->SetTarget(GetActor()); // è‡ªèº«ã®ã‚¢ã‚¯ã‚¿ãƒ¼ã‚’æ¸¡ã™
 		cameraComponent->SetDistance(5.0f);
 		cameraComponent->SetOffset({ 0, 1.8f, 0 });
 	}
-	// Model‚ÆPlayer‚ªzŠÂQÆ‚µ‚Ä‚é‰Â”\«‚ª‚ ‚é!
+
+	weaponActor = ActorManager::Instance().FindActorName("Weapon");
+	if (weaponActor) {
+		weaponCollision = weaponActor->GetComponent<WeaponCollision>();
+	}
+
+	// æ­¦å™¨ã®ãƒ¢ãƒ‡ãƒ«èª­ã¿è¾¼ã¿
+	ID3D11Device* device = Graphics::Instance().GetDevice();
+	weaponModel = std::make_shared<Model>(device, "Data/Model/Weapon/Sword.glb");
+
+	// Modelã¨PlayerãŒå¾ªç’°å‚ç…§ã—ã¦ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹!
 	GetActor()->GetModel()->GetNodePoses(nodePoses);
 	GetActor()->GetModel()->GetNodePoses(oldNodePoses);
 }
 
-// XVˆ—
+// æ›´æ–°å‡¦ç†
 void Player::Update(float elapsedTime)
 {
 	CharacterControl(elapsedTime);
 	UpdateAnimation(elapsedTime);
+	WeaponAttachment(elapsedTime);
+
+	// æ­¦å™¨ã®ãƒ‡ãƒãƒƒã‚°è¡¨ç¤º
+	Graphics& graphics = Graphics::Instance();
+	ShapeRenderer* shapeRenderer = graphics.GetShapeRenderer();
+	RenderDebugPrimitive(shapeRenderer);
+
+	weaponModel->UpdateTransform(WeaponTransform);
 }
 
-// ƒAƒjƒ[ƒVƒ‡ƒ“XVˆ—
+// GUIæç”»
+void Player::OnGUI()
+{
+	DirectX::XMFLOAT3 hitPos = GetWeaponHitPosition();
+	// ImGuiã§èª¿æ•´
+	if (ImGui::CollapsingHeader("Weapon Debug", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::DragFloat3("Weapon Position", &localPosition.x, 0.1f);
+		ImGui::DragFloat3("Weapon Angle", &localAngle.x, 0.1f);
+		ImGui::DragFloat3("Weapon Scale", &localScale.x, 0.1f);
+
+		ImGui::Separator();
+		ImGui::DragFloat3("Hit Offset", &weaponHitOffset.x, 0.1f);
+		ImGui::DragFloat("Hit Radius", &weaponHitRadius, 0.1f, 0.1f, 10.0f);
+		ImGui::Text("Hit Position: %.2f, %.2f, %.2f", hitPos.x, hitPos.y, hitPos.z);
+	}
+}
+
+// ãƒ‡ãƒãƒƒã‚¯ãƒ—ãƒªãƒŸãƒ†ã‚£ãƒ–æç”»
+void Player::RenderDebugPrimitive(ShapeRenderer* shapeRenderer)
+{
+	if (!weaponActor) {
+		// ã‚‚ã— NULL ãªã‚‰ã€ä»Šã“ã®ç¬é–“ã«å†åº¦æ¢ã—ã¦ã¿ã‚‹
+		weaponActor = ActorManager::Instance().FindActorName("Weapon");
+		if (!weaponActor) return; // ãã‚Œã§ã‚‚ã„ãªã‘ã‚Œã°è«¦ã‚ã¦å¸°ã‚‹
+	}
+
+	// æ”»æ’ƒåˆ¤å®šä½ç½®ã‚’å–å¾—
+	DirectX::XMFLOAT3 hitPos = GetWeaponHitPosition();
+
+	weaponActor->SetPosition(hitPos);
+
+	DirectX::XMFLOAT4 color = { 1.0f, 0.0f, 0.0f, 1.0f };
+	shapeRenderer->DrawSphere(hitPos, weaponHitRadius, color);
+}
+
+// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ›´æ–°å‡¦ç†
 void Player::UpdateAnimation(float elapsedTime)
 {
 	GamePad& gamePad = Input::Instance().GetGamePad();
@@ -41,12 +92,13 @@ void Player::UpdateAnimation(float elapsedTime)
 
 	int newAnimationIndex = animationIndex;
 
+
 	switch (state)
 	{
 	case Player::State::Idle:
 		animationLoop = true;
 		useRootMotion = false;
-		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("Idle");
+		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("idle");
 
 		if (moveLength > 0.01f)
 		{
@@ -59,7 +111,7 @@ void Player::UpdateAnimation(float elapsedTime)
 	case Player::State::Run:
 		animationLoop = true;
 		useRootMotion = false;
-		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("RunForwardInPlace");
+		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("run");
 
 		if (moveLength < 0.01f)
 		{
@@ -68,26 +120,52 @@ void Player::UpdateAnimation(float elapsedTime)
 
 		break;
 	case Player::State::Attack:
+		animationLoop = false;
+		useRootMotion = false;
+		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("slash");
+
+		const Model::Animation& animation = GetActor()->GetModel()->GetAnimations().at(animationIndex);		
+
+		//// è‡ªåˆ†ã®æ­¦å™¨ã‚³ãƒªã‚¸ãƒ§ãƒ³ã«é‡ãªã£ã¦ã„ã‚‹ç›¸æ‰‹ã®ãƒªã‚¹ãƒˆã‚’å–å¾—
+		//auto hitList = CollisionManager::Instance().CheckCollison(weaponCollision);
+
+		//for (auto& other : hitList)
+		//{
+		//	if (other->GetActor() == this->GetActor()) continue;
+
+		//	// ç›¸æ‰‹ãŒ Enemy ã ã£ãŸã‚‰ãƒ€ãƒ¡ãƒ¼ã‚¸ã‚’ä¸ãˆã‚‹
+		//	if (other->GetActor()->GetName() == "Enemy")
+		//	{
+		//		auto health = other->GetActor()->GetComponent<HealthComponent>();
+		//		if (health) health->ApplyDamage(10, 0.5f);
+		//	}
+		//}
+
+		if (animationSeconds >= animation.secondsLength)
+		{
+			state = State::Idle;
+		}
+
 		break;
 	}
 
-	// ƒAƒjƒ[ƒVƒ‡ƒ“Ø‚è‘Ö‚¦”»’è
+	// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³åˆ‡ã‚Šæ›¿ãˆåˆ¤å®š
 	if (animationIndex != newAnimationIndex)
 	{
-		// ‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Ìp¨‚ğ•Û‘¶
+		// å‰ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å§¿å‹¢ã‚’ä¿å­˜
 		oldNodePoses = nodePoses;
 
-		// V‚µ‚¢ƒAƒjƒ[ƒVƒ‡ƒ“‚ÉØ‚è‘Ö‚¦
+		// æ–°ã—ã„ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã«åˆ‡ã‚Šæ›¿ãˆ
 		animationIndex = newAnimationIndex;
 		animationSeconds = 0.0f;
 
-		// •âŠÔŠJn
+		// è£œé–“é–‹å§‹
 		animationBlendSeconds = 0.0f;
 		isBlending = true;
 
 	}
 
-	// •âŠÔŠÔXV
+	// è£œé–“æ™‚é–“æ›´æ–°
 	if (isBlending)
 	{
 		animationBlendSeconds += elapsedTime;
@@ -102,45 +180,45 @@ void Player::UpdateAnimation(float elapsedTime)
 	{
 		const Model::Animation& animation = GetActor()->GetModel()->GetAnimations().at(animationIndex);
 
-		// Œ»İ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚Ìp¨‚ğæ“¾
+		// ç¾åœ¨ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã®å§¿å‹¢ã‚’å–å¾—
 		std::vector<Model::NodePose> currentNodePoses;
 		GetActor()->GetModel()->ComputeAnimation(animationIndex, animationSeconds, currentNodePoses);
 
-		// •âŠÔˆ—
+		// è£œé–“å‡¦ç†
 		if (isBlending && animationBlendSeconds < animationBlendSecondsLength)
 		{
-			// •âŠÔ—¦‚ğŒvZ
+			// è£œé–“ç‡ã‚’è¨ˆç®—
 			float blendRate = animationBlendSeconds / animationBlendSecondsLength;
 
-			// ‘O‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ÆŒ»İ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“‚ğ•âŠÔ
+			// å‰ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã¨ç¾åœ¨ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³ã‚’è£œé–“
 			GetActor()->GetModel()->BlendAnimations(oldNodePoses, currentNodePoses, blendRate, nodePoses);
 		}
 		else
 		{
-			// •âŠÔ‚È‚µ‚ÅŒ»İ‚ÌƒAƒjƒ[ƒVƒ‡ƒ“p¨‚ğg—p
+			// è£œé–“ãªã—ã§ç¾åœ¨ã®ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³å§¿å‹¢ã‚’ä½¿ç”¨
 			nodePoses = currentNodePoses;
 		}
 
 		if (useRootMotion)
 		{
-			// ƒ‹[ƒgƒ‚[ƒVƒ‡ƒ“ƒm[ƒh”Ô†æ“¾
+			// ãƒ«ãƒ¼ãƒˆãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒãƒ¼ãƒ‰ç•ªå·å–å¾—
 			const int rootMotionNodeIndex = GetActor()->GetModel()->GetNodeIndex("Character1_Hips");
 
-			// ‰‰ñA‘O‰ñA¡‰ñ‚Ìƒ‹[ƒgƒ‚[ƒVƒ‡ƒ“‚Ìp¨‚ğæ“¾
+			// åˆå›ã€å‰å›ã€ä»Šå›ã®ãƒ«ãƒ¼ãƒˆãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ã®å§¿å‹¢ã‚’å–å¾—
 			Model::NodePose beginPose, oldPose, newPose;
 			GetActor()->GetModel()->ComputeAnimation(animationIndex, rootMotionNodeIndex, 0, beginPose);
 			GetActor()->GetModel()->ComputeAnimation(animationIndex, rootMotionNodeIndex, oldAnimationSeconds, oldPose);
 			GetActor()->GetModel()->ComputeAnimation(animationIndex, rootMotionNodeIndex, animationSeconds, newPose);
 
-			//ƒ[ƒJƒ‹ˆÚ“®’l‚ğZo
+			//ãƒ­ãƒ¼ã‚«ãƒ«ç§»å‹•å€¤ã‚’ç®—å‡º
 			DirectX::XMFLOAT3 localTranslation;
 			if (oldAnimationSeconds > animationSeconds)
 			{
-				// ƒ‹[ƒvˆ—
+				// ãƒ«ãƒ¼ãƒ—æ™‚å‡¦ç†
 				Model::NodePose endPose;
 				GetActor()->GetModel()->ComputeAnimation(animationIndex, rootMotionNodeIndex, animation.secondsLength, endPose);
 
-				// ƒ[ƒJƒ‹ˆÚ“®’l‚ğZo
+				// ãƒ­ãƒ¼ã‚«ãƒ«ç§»å‹•å€¤ã‚’ç®—å‡º
 				localTranslation.x = (endPose.position.x - oldPose.position.x) +
 					(newPose.position.x - beginPose.position.x);
 				localTranslation.y = (endPose.position.y - oldPose.position.y) +
@@ -155,7 +233,7 @@ void Player::UpdateAnimation(float elapsedTime)
 				localTranslation.z = newPose.position.z - oldPose.position.z;
 			}
 
-			// ƒOƒ[ƒoƒ‹ˆÚ“®’l‚ğZo
+			// ã‚°ãƒ­ãƒ¼ãƒãƒ«ç§»å‹•å€¤ã‚’ç®—å‡º
 			Model::Node& rootMotionNode = GetActor()->GetModel()->GetNodes().at(rootMotionNodeIndex);
 			DirectX::XMVECTOR LocalTranslation = DirectX::XMLoadFloat3(&localTranslation);
 			DirectX::XMMATRIX ParentGlobalTransform = DirectX::XMLoadFloat4x4(&rootMotionNode.parent->globalTransform);
@@ -163,37 +241,37 @@ void Player::UpdateAnimation(float elapsedTime)
 
 			if (bakeTranslationY)
 			{
-				// Y¬•ª‚ÌˆÚ“®’l‚ğ”²‚­ 
+				// Yæˆåˆ†ã®ç§»å‹•å€¤ã‚’æŠœã 
 				GlobalTranslation = DirectX::XMVectorSetY(GlobalTranslation, 0);
 
-				// ¡‰ñ‚Ìp¨‚ÌƒOƒ[ƒoƒ‹ˆÊ’u‚ğZo 
+				// ä»Šå›ã®å§¿å‹¢ã®ã‚°ãƒ­ãƒ¼ãƒãƒ«ä½ç½®ã‚’ç®—å‡º 
 				DirectX::XMVECTOR LocalPos = DirectX::XMLoadFloat3(&newPose.position);
 				DirectX::XMVECTOR currentGlobalPos = DirectX::XMVector3Transform(LocalPos, ParentGlobalTransform);
 
-				// XZ¬•ª‚ğíœ 
+				// XZæˆåˆ†ã‚’å‰Šé™¤ 
 				currentGlobalPos = DirectX::XMVectorSetX(currentGlobalPos, 0);
 				currentGlobalPos = DirectX::XMVectorSetZ(currentGlobalPos, 0);
 
-				// ƒ[ƒJƒ‹‹óŠÔ•ÏŠ· 
+				// ãƒ­ãƒ¼ã‚«ãƒ«ç©ºé–“å¤‰æ› 
 				DirectX::XMMATRIX invGlobalTransform = DirectX::XMMatrixInverse(nullptr, ParentGlobalTransform);
 				LocalPos = DirectX::XMVector3Transform(currentGlobalPos, invGlobalTransform);
 
-				// ƒ‹[ƒgƒ‚[ƒVƒ‡ƒ“ƒm[ƒh‚ÌˆÊ’u‚ğİ’è 
+				// ãƒ«ãƒ¼ãƒˆãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒãƒ¼ãƒ‰ã®ä½ç½®ã‚’è¨­å®š 
 				DirectX::XMStoreFloat3(&nodePoses[rootMotionNodeIndex].position, LocalPos);
 			}
 			else
 			{
-				//ƒ‹[ƒgƒ‚[ƒVƒ‡ƒ“ƒm[ƒh‚ğ‰‰ñ‚Ìp¨‚É‚·‚é
+				//ãƒ«ãƒ¼ãƒˆãƒ¢ãƒ¼ã‚·ãƒ§ãƒ³ãƒãƒ¼ãƒ‰ã‚’åˆå›ã®å§¿å‹¢ã«ã™ã‚‹
 				nodePoses[rootMotionNodeIndex].position = beginPose.position;
 			}
 
-			//ƒ[ƒ‹ƒhˆÚ“®’l‚ğZo
+			//ãƒ¯ãƒ¼ãƒ«ãƒ‰ç§»å‹•å€¤ã‚’ç®—å‡º
 			DirectX::XMMATRIX WorldTransform = DirectX::XMLoadFloat4x4(&worldTransform);
 			DirectX::XMVECTOR WorldTranslation = DirectX::XMVector3TransformNormal(GlobalTranslation, WorldTransform);
 			DirectX::XMFLOAT3 worldTranslation;
 			DirectX::XMStoreFloat3(&worldTranslation, WorldTranslation);
 
-			//ˆÚ“®’l‚ğXV
+			//ç§»å‹•å€¤ã‚’æ›´æ–°
 			DirectX::XMFLOAT3 position = GetActor()->GetPosition();
 			position.x += worldTranslation.x;
 			position.y += worldTranslation.y;
@@ -201,7 +279,7 @@ void Player::UpdateAnimation(float elapsedTime)
 			GetActor()->SetPosition(position);
 		}
 
-		// ƒAƒjƒ[ƒVƒ‡ƒ“ŠÔXV
+		// ã‚¢ãƒ‹ãƒ¡ãƒ¼ã‚·ãƒ§ãƒ³æ™‚é–“æ›´æ–°
 		oldAnimationSeconds = animationSeconds;
 		animationSeconds += elapsedTime;
 		if (animationSeconds > animation.secondsLength)
@@ -216,27 +294,84 @@ void Player::UpdateAnimation(float elapsedTime)
 			}
 		}
 
-		//p¨XV
+		//å§¿å‹¢æ›´æ–°
 		GetActor()->GetModel()->SetNodePoses(nodePoses);
 	}
 }
 
-// ƒvƒŒƒCƒ„[ƒRƒ“ƒgƒ[ƒ‰[
+// æ­¦å™¨ã®ã‚¢ã‚¿ãƒƒãƒãƒ¡ãƒ³ãƒˆ
+void Player::WeaponAttachment(float elapsedTime)
+{
+	std::string rightHandName = "mixamorig:RightHand";
+
+	ModelRenderer* modelremderer = Graphics::Instance().GetModelRenderer();
+
+	// æ­¦å™¨ã®ãƒ­ãƒ¼ã‚«ãƒ«è¡Œåˆ—ã‚’è¨ˆç®—ã™ã‚‹
+	DirectX::XMMATRIX S = DirectX::XMMatrixScaling(localScale.x, localScale.y, localScale.z);
+	DirectX::XMMATRIX R = DirectX::XMMatrixRotationRollPitchYaw(localAngle.x, localAngle.y, localAngle.z);
+	DirectX::XMMATRIX T = DirectX::XMMatrixTranslation(localPosition.x, localPosition.y, localPosition.z);
+	DirectX::XMMATRIX weaponLocal = S * R * T;
+
+	// ã‚­ãƒ£ãƒ©ã‚¯ã‚¿ãƒ¼ã®ãƒ¢ãƒ‡ãƒ«ã‹ã‚‰å³æ‰‹ãƒãƒ¼ãƒ‰ã‚’æ¤œç´¢ã™ã‚‹
+	for (const Model::Node& node : GetActor()->GetModel()->GetNodes())
+	{
+		if (node.name == rightHandName)
+		{
+			// å³æ‰‹ãƒãƒ¼ãƒ‰ã¨æ­¦å™¨ã®ãƒ­ãƒ¼ã‚«ãƒ«è¡Œåˆ—ã‹ã‚‰æ­¦å™¨ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã‚’æ±‚ã‚ã‚‹
+			DirectX::XMMATRIX rightHandGlobal = DirectX::XMLoadFloat4x4(&node.globalTransform);
+			DirectX::XMMATRIX playerWorld = DirectX::XMLoadFloat4x4(&GetActor()->GetTransform());
+			DirectX::XMMATRIX weaponWorld = weaponLocal * rightHandGlobal * playerWorld;
+
+			DirectX::XMStoreFloat4x4(&WeaponTransform, weaponWorld);
+
+			modelremderer->Draw(ShaderId::Lambert, weaponModel);
+			break;
+		}
+	}
+}
+
+// æ”»æ’ƒåˆ¤å®šä½ç½®ã‚’å–å¾—
+DirectX::XMFLOAT3 Player::GetWeaponHitPosition() const
+{
+	// æ­¦å™¨ã®ãƒ¯ãƒ¼ãƒ«ãƒ‰è¡Œåˆ—ã¨ã‚ªãƒ•ã‚»ãƒƒãƒˆ
+	DirectX::XMMATRIX WeaponWorld = DirectX::XMLoadFloat4x4(&WeaponTransform);
+	DirectX::XMVECTOR Offset = DirectX::XMLoadFloat3(&weaponHitOffset);
+
+	DirectX::XMVECTOR HitPos = DirectX::XMVector3Transform(Offset, WeaponWorld);
+
+	DirectX::XMFLOAT3 result;
+	DirectX::XMStoreFloat3(&result, HitPos);
+
+	return result;
+}
+
+// ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã‚³ãƒ³ãƒˆãƒ­ãƒ¼ãƒ©ãƒ¼
 void Player::CharacterControl(float elapsedTime)
 {
 	GamePad& gamePad = Input::Instance().GetGamePad();
+	healthComponent = GetActor()->GetComponent<HealthComponent>();
 
-	//isƒxƒNƒgƒ‹æ“¾
+	//é€²è¡Œãƒ™ã‚¯ãƒˆãƒ«å–å¾—
 	DirectX::XMFLOAT3 moveVec = GetActor()->GetMoveVec();
 
-	//ù‰ñˆ—
+	//æ—‹å›å‡¦ç†
 	moveComponent->Turn(moveVec, elapsedTime);
 
-	//ˆÚ“®ˆ—
+	//ç§»å‹•å‡¦ç†
 	moveComponent->Move(elapsedTime, moveVec.x, moveVec.z);
 
+	// ã‚¹ãƒšãƒ¼ã‚¹ã‚­ãƒ¼ã‚’æŠ¼ã™ã¨ã‚¸ãƒ£ãƒ³ãƒ—
 	if (gamePad.GetButtonDown() & GamePad::BTN_SPACE)
 	{
 		moveComponent->Jump();
+	}
+
+	// Zã‚­ãƒ¼ã‚’æŠ¼ã™ã¨æ”»æ’ƒ
+	if (gamePad.GetButtonDown() & GamePad::BTN_A)
+	{
+		if (!GetActor()->IsAttacking())
+		{
+			state = State::Attack;
+		}
 	}
 }

@@ -9,7 +9,7 @@ public:
 	~WeaponComponent() {}
 
 	// 名前取得
-	const char* GetName() const override { return "WeaponComponent"; }
+	const char* GetName() const override { return "Weapon"; }
 
 	// 開始処理
 	void Start() override;
@@ -23,6 +23,7 @@ public:
 	// 親アクターを設定
 	void SetParentActor(std::shared_ptr<Actor> parent) { parentActor = parent; }
 	void SetHitActor(std::shared_ptr<Actor> hitActor) { this->HitActor = hitActor; }
+	std::weak_ptr<Actor>GetHitActor() const { return HitActor; }
 
 	// アタッチ先のボーン名を設定
 	void SetAttachBoneName(const char* name) { attachBoneName = name; }
@@ -54,4 +55,3 @@ private:
 
 	float weaponHitRadius = 0.5f;
 };
-

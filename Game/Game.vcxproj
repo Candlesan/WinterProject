@@ -140,6 +140,7 @@
     <ClInclude Include="Source\Framework.h" />
     <ClInclude Include="Source\FreeCameraController.h" />
     <ClInclude Include="Source\GamePad.h" />
+    <ClInclude Include="Source\HealthComponent.h" />
     <ClInclude Include="Source\Input.h" />
     <ClInclude Include="Source\JudgmentBase.h" />
     <ClInclude Include="Source\JudgmentDerived.h" />
@@ -167,7 +168,7 @@
     <ClInclude Include="Source\Shader.h" />
     <ClInclude Include="Source\Sprite.h" />
     <ClInclude Include="Source\TransformUtils.h" />
-    <ClInclude Include="Source\WeaponConponent.h" />
+    <ClInclude Include="Source\WeaponCollision.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui-docking\imgui.cpp" />
@@ -194,6 +195,7 @@
     <ClCompile Include="Source\Framework.cpp" />
     <ClCompile Include="Source\FreeCameraController.cpp" />
     <ClCompile Include="Source\GamePad.cpp" />
+    <ClCompile Include="Source\HealthComponent.cpp" />
     <ClCompile Include="Source\Input.cpp" />
     <ClCompile Include="Source\JudgmentDerived.cpp" />
     <ClCompile Include="Source\Mathf.cpp" />
@@ -216,7 +218,6 @@
     <ClCompile Include="Source\Scene.cpp" />
     <ClCompile Include="Source\Sprite.cpp" />
     <ClCompile Include="Source\TransformUtils.cpp" />
-    <ClCompile Include="Source\WeaponComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Basic.hlsli" />
