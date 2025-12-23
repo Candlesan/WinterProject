@@ -1,7 +1,6 @@
 ﻿#include "Player.h"
 #include "Graphics.h"
 #include "Camera.h"
-#include "WeaponCollision.h"
 #include <imgui.h>
 
 
@@ -126,20 +125,22 @@ void Player::UpdateAnimation(float elapsedTime)
 
 		const Model::Animation& animation = GetActor()->GetModel()->GetAnimations().at(animationIndex);		
 
-		//// 自分の武器コリジョンに重なっている相手のリストを取得
-		//auto hitList = CollisionManager::Instance().CheckCollison(weaponCollision);
+		auto weapon = GetWeaponCollision();
 
-		//for (auto& other : hitList)
-		//{
-		//	if (other->GetActor() == this->GetActor()) continue;
+		if (weapon)
+		{
+			if (animationSeconds >= 0.2f && animationSeconds <= 0.7f)
+			{
+				weaponCollision->SetAttack(3, 0.5f);
+				weaponCollision->isActive = true;
 
-		//	// 相手が Enemy だったらダメージを与える
-		//	if (other->GetActor()->GetName() == "Enemy")
-		//	{
-		//		auto health = other->GetActor()->GetComponent<HealthComponent>();
-		//		if (health) health->ApplyDamage(10, 0.5f);
-		//	}
-		//}
+				weaponActor->SetPosition(GetWeaponHitPosition());
+			}
+			else
+			{
+				weaponCollision->isActive = false;
+			}
+		}
 
 		if (animationSeconds >= animation.secondsLength)
 		{
@@ -299,6 +300,20 @@ void Player::UpdateAnimation(float elapsedTime)
 	}
 }
 
+std::shared_ptr<WeaponCollision> Player::GetWeaponCollision()
+{
+	// なければ探す（一度見つかれば次からはスルーされる）
+	if (!weaponCollision) {
+		if (!weaponActor) {
+			weaponActor = ActorManager::Instance().FindActorName("Weapon");
+		}
+		if (weaponActor) {
+			weaponCollision = weaponActor->GetComponent<WeaponCollision>();
+		}
+	}
+	return std::static_pointer_cast<WeaponCollision>(weaponCollision);
+}
+
 // 武器のアタッチメント
 void Player::WeaponAttachment(float elapsedTime)
 {
@@ -372,6 +387,11 @@ void Player::CharacterControl(float elapsedTime)
 		if (!GetActor()->IsAttacking())
 		{
 			state = State::Attack;
+			auto weapon = GetWeaponCollision();
+			if (weapon)
+			{
+				weaponCollision->isActive = true;
+			}
 		}
 	}
 }

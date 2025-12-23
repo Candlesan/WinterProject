@@ -5,7 +5,7 @@
 #include "MoveComponent.h"
 #include "CameraComponent.h"
 #include "HealthComponent.h"
-#include "CollisionManager.h"
+#include "WeaponCollision.h"
 #include "ShapeRenderer.h"
 
 // プレイヤー
@@ -43,6 +43,8 @@ private:
 	// アニメーション更新処理
 	void UpdateAnimation(float elapsedTime);
 
+	std::shared_ptr<WeaponCollision> GetWeaponCollision();
+
 	enum class State
 	{
 		Idle = 0,
@@ -55,7 +57,7 @@ private:
 	std::shared_ptr<MoveComponent> moveComponent;
 	std::shared_ptr<CameraComponent> cameraComponent;
 	std::shared_ptr<HealthComponent> healthComponent;
-	std::shared_ptr<CollisionComponent> weaponCollision;
+	std::shared_ptr<WeaponCollision> weaponCollision;
 	std::shared_ptr<Actor> weaponActor;
 
 	// 武器関係
