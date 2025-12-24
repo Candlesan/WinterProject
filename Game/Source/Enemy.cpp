@@ -6,12 +6,20 @@
 #include "NodeBase.h"
 #include "ActionDerived.h"
 #include "JudgmentDerived.h"
+#include "Graphics.h"
 #include <imgui.h>
 
 // 開始処理
 void Enemy::Start()
 {
 	moveComponent = GetActor()->GetComponent<MoveComponent>();
+
+	weaponActor = ActorManager::Instance().FindActorName("EnemyWeapon");
+	if (weaponActor) {
+		weaponCollision = weaponActor->GetComponent<WeaponCollision>();
+	}
+
+	GetActor()->SetRotationDegree(0, 180, 0);
 
 	// ビヘイビアツリー設定
 	//behaviorData = new BehaviorData();
@@ -56,6 +64,22 @@ void Enemy::Update(float elapsedTime)
 	//	activeNode = aiTree->Run(activeNode, behaviorData, elapsedTime);
 	//}
 
+	GamePad& gamePad = Input::Instance().GetGamePad();
+	if (gamePad.GetButtonDown() & GamePad::BTN_B)
+	{
+		state = State::Attack;
+		auto weapon = GetWeaponCollision();
+		if (weapon)
+		{
+			weapon->isActive = true;
+		}
+	}
+
+	// 武器のデバッグ表示
+	Graphics& graphics = Graphics::Instance();
+	ShapeRenderer* shapeRenderer = graphics.GetShapeRenderer();
+	RenderDebugPrimitive(shapeRenderer);
+
 	UpdateAnimation(elapsedTime);
 }
 
@@ -71,6 +95,13 @@ void Enemy::OnGUI()
 	//ImGui::Text("Behavior %s", str.c_str());
 	ImGui::Separator();
 
+	// 武器調整用のGUIを追加
+	if (ImGui::CollapsingHeader("Weapon Adjustment", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::DragFloat3("Hit Offset", &weaponHitOffset.x, 0.01f);
+		ImGui::DragFloat("Hit Radius", &weaponHitRadius, 0.01f, 0.1f, 5.0f);
+	}
+
 	if (ImGui::CollapsingHeader("Territory", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::Text("TargetPosition : %f, %f, %f", targetPosition.x, targetPosition.y, targetPosition.z);
@@ -78,6 +109,59 @@ void Enemy::OnGUI()
 		ImGui::DragFloat("TerritoryOrigin", &territoryRange, 0.01f);
 	}
 }
+
+// デバックプリミティブ描画
+void Enemy::RenderDebugPrimitive(ShapeRenderer* shapeRenderer)
+{
+	std::string rightHandName = "B_R_Hand";
+	DirectX::XMFLOAT3 handWorldPos = { 0, 0, 0 };
+
+	for (const Model::Node& node : GetActor()->GetModel()->GetNodes())
+	{
+		if (node.name == rightHandName)
+		{
+			DirectX::XMMATRIX handGlobal = DirectX::XMLoadFloat4x4(&node.globalTransform);
+			DirectX::XMMATRIX enemyWorld = DirectX::XMLoadFloat4x4(&GetActor()->GetTransform());
+
+			// ★オフセット行列を作成
+			DirectX::XMMATRIX offsetT = DirectX::XMMatrixTranslation(weaponHitOffset.x, weaponHitOffset.y, weaponHitOffset.z);
+
+			// ★ 手の行列 * オフセット * 親(敵)の行列
+			DirectX::XMMATRIX finalHitMatrix = offsetT * handGlobal * enemyWorld;
+
+			DirectX::XMVECTOR posVector = finalHitMatrix.r[3];
+			DirectX::XMStoreFloat3(&handWorldPos, posVector);
+			break;
+		}
+	}
+
+	// 実際の武器アクター（当たり判定を持っている方）の位置を更新
+	if (weaponActor) {
+		weaponActor->SetPosition(handWorldPos);
+		// ついでにコリジョンの半径も同期させるなら
+		if (weaponCollision) {
+			weaponCollision->SetSphere(weaponHitRadius);
+		}
+	}
+
+	DirectX::XMFLOAT4 color = { 0.0f, 1.0f, 0.0f, 1.0f };
+	shapeRenderer->DrawSphere(handWorldPos, weaponHitRadius, color);
+}
+
+std::shared_ptr<WeaponCollision> Enemy::GetWeaponCollision()
+{
+	// なければ探す（一度見つかれば次からはスルーされる）
+	if (!weaponCollision) {
+		if (!weaponActor) {
+			weaponActor = ActorManager::Instance().FindActorName("EnemyWeapon");
+		}
+		if (weaponActor) {
+			weaponCollision = weaponActor->GetComponent<WeaponCollision>();
+		}
+	}
+	return std::static_pointer_cast<WeaponCollision>(weaponCollision);
+}
+
 
 // アニメーション更新
 void Enemy::UpdateAnimation(float elapsedTime)
@@ -104,6 +188,27 @@ void Enemy::UpdateAnimation(float elapsedTime)
 		animationLoop = false;
 		useRootMotion = false;
 		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("Slash");
+
+		const Model::Animation& animation = GetActor()->GetModel()->GetAnimations().at(animationIndex);
+
+		auto weapon = GetWeaponCollision();
+		if (weapon)
+		{
+			if (animationSeconds >= 0.1f && animationSeconds <= 0.8f)
+			{
+				weapon->SetAttack(1, 0.5f);
+				weapon->isActive = true;
+			}
+			else
+			{
+				weapon->isActive = false;
+			}
+		}
+
+		if (animationSeconds >= animation.secondsLength)
+		{
+			state = State::Idle;
+		}
 		break;
 	}
 

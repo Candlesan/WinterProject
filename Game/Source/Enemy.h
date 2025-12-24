@@ -5,6 +5,8 @@
 #include "BehaviorTree.h"
 #include "BehaviorData.h"
 #include "NodeBase.h"
+#include "ShapeRenderer.h"
+#include "WeaponCollision.h"
 
 // エネミー
 class Enemy : public Component
@@ -71,8 +73,17 @@ public:
 	//void SetHealth(int setHealth) { health = setHealth; }
 
 private:
+	void RenderDebugPrimitive(ShapeRenderer* shaprenderer);
+
+	std::shared_ptr<WeaponCollision> GetWeaponCollision();
+private:
 	// コンポーネント
 	std::shared_ptr<MoveComponent> moveComponent;
+	std::shared_ptr<WeaponCollision> weaponCollision;
+	std::shared_ptr<Actor> weaponActor;
+
+	DirectX::XMFLOAT3 weaponHitOffset = { 0, 0, 0 }; // 手からのズレ
+	float weaponHitRadius = 0.5f;                   // 判定の大きさ
 
 	// ビヘイビアツリー関係
 	DirectX::XMFLOAT3	targetPosition = { 0.0f,0.0f,0.0f };

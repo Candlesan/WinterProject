@@ -107,7 +107,10 @@ void Actor::OnGUI()
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
 	{
 		ImGui::DragFloat3("Position", &position.x, 0.01);
-		ImGui::DragFloat4("Angle", &rotation.x, 1.0f, -360.0f, 360.0f);
+		if (ImGui::DragFloat3("Angle", &guiAngle.x, 1.0f))
+		{
+			SetRotationDegree(guiAngle.x, guiAngle.y, guiAngle.z);
+		}
 		ImGui::DragFloat3("Scale", &scale.x, 0.01);
 	}
 

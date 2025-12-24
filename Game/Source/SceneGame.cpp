@@ -51,11 +51,13 @@ void SceneGame::Initialize()
 		collision->SetCylinder(0.5f, 0.5);
 
 		std::shared_ptr<Actor> weponActor = ActorManager::Instance().Create();
-		weponActor->SetName("Weapon");
+		weponActor->SetName("PlayerWeapon");
 		// 武器用アクターには専用のコリジョンをつける
 		auto weaponCollistion = weponActor->AddComponent<WeaponCollision>();
 		weaponCollistion->SetSphere(0.5f);
 		weaponCollistion->SetTrigger(true);
+		weaponCollistion->ownerName = "Player";
+
 	}
 	// エネミー初期化
 	{
@@ -74,6 +76,14 @@ void SceneGame::Initialize()
 		// 円柱の衝突判定を設定
 		std::shared_ptr<CollisionComponent> collision = actor->AddComponent<CollisionComponent>();
 		collision->SetCylinder(0.5f, 0.5);
+
+		std::shared_ptr<Actor> weponActor = ActorManager::Instance().Create();
+		weponActor->SetName("EnemyWeapon");
+		// 武器用アクターには専用のコリジョンをつける
+		auto weaponCollistion = weponActor->AddComponent<WeaponCollision>();
+		weaponCollistion->SetSphere(0.5f);
+		weaponCollistion->SetTrigger(true);
+		weaponCollistion->ownerName = "Enemy";
 	}
 }
 

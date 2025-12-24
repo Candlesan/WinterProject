@@ -102,6 +102,19 @@ public:
 		}
 		return nullptr;
 	}
+
+	void SetRotationDegree(float pitch, float yaw, float roll)
+	{
+		guiAngle = { pitch, yaw, roll };
+
+		// 角度をラジアンにしてクォータニオンを作成
+		DirectX::XMVECTOR q = DirectX::XMQuaternionRotationRollPitchYaw(
+			DirectX::XMConvertToRadians(pitch),
+			DirectX::XMConvertToRadians(yaw),
+			DirectX::XMConvertToRadians(roll)
+		);
+		DirectX::XMStoreFloat4(&rotation, q);
+	}
 private:
 	std::string name;
 	DirectX::XMFLOAT3 position = DirectX::XMFLOAT3(0, 0, 0);
@@ -116,6 +129,8 @@ private:
 
 	float radius = 0.0f;
 	bool isAttacking = false;
+
+	DirectX::XMFLOAT3 guiAngle = { 0, 0, 0 };
 
 	std::shared_ptr<Model> model;
 

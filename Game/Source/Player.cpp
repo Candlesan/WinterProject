@@ -17,7 +17,7 @@ void Player::Start()
 		cameraComponent->SetOffset({ 0, 1.8f, 0 });
 	}
 
-	weaponActor = ActorManager::Instance().FindActorName("Weapon");
+	weaponActor = ActorManager::Instance().FindActorName("PlayerWeapon");
 	if (weaponActor) {
 		weaponCollision = weaponActor->GetComponent<WeaponCollision>();
 	}
@@ -69,7 +69,7 @@ void Player::RenderDebugPrimitive(ShapeRenderer* shapeRenderer)
 {
 	if (!weaponActor) {
 		// もし NULL なら、今この瞬間に再度探してみる
-		weaponActor = ActorManager::Instance().FindActorName("Weapon");
+		weaponActor = ActorManager::Instance().FindActorName("PlayerWeapon");
 		if (!weaponActor) return; // それでもいなければ諦めて帰る
 	}
 
@@ -131,14 +131,14 @@ void Player::UpdateAnimation(float elapsedTime)
 		{
 			if (animationSeconds >= 0.2f && animationSeconds <= 0.7f)
 			{
-				weaponCollision->SetAttack(3, 0.5f);
-				weaponCollision->isActive = true;
+				weapon->SetAttack(3, 0.5f);
+				weapon->isActive = true;
 
 				weaponActor->SetPosition(GetWeaponHitPosition());
 			}
 			else
 			{
-				weaponCollision->isActive = false;
+				weapon->isActive = false;
 			}
 		}
 
@@ -390,7 +390,7 @@ void Player::CharacterControl(float elapsedTime)
 			auto weapon = GetWeaponCollision();
 			if (weapon)
 			{
-				weaponCollision->isActive = true;
+				weapon->isActive = true;
 			}
 		}
 	}
