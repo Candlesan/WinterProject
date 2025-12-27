@@ -273,6 +273,63 @@ Model::Model(ID3D11Device* device, const char* filename, float sampleRate)
 				_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 			}
 		}
+
+		if (material.emissiveMap == nullptr)
+		{
+			if (material.emissiveTextureFileName.empty())
+			{
+				// エミッシブダミーテクスチャ作成
+				HRESULT hr = GpuResourceUtils::CreateDummyTexture(device, 0xFFFF7F7F,
+					material.emissiveMap.GetAddressOf());
+				_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+			}
+			else
+			{
+				// エミッシブのテクスチャ読み込み
+				std::filesystem::path texturePath(dirpath / material.emissiveTextureFileName);
+				HRESULT hr = GpuResourceUtils::LoadTexture(device, texturePath.string().c_str(),
+					material.emissiveMap.GetAddressOf());
+				_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+			}
+		}
+
+		if (material.occlusionMap == nullptr)
+		{
+			if (material.occlusionTextureFileName.empty())
+			{
+				// オクルージョンダミーテクスチャ作成
+				HRESULT hr = GpuResourceUtils::CreateDummyTexture(device, 0xFFFF7F7F,
+					material.occlusionMap.GetAddressOf());
+				_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+			}
+			else
+			{
+				// オクルージョンのテクスチャ読み込み
+				std::filesystem::path texturePath(dirpath / material.occlusionTextureFileName);
+				HRESULT hr = GpuResourceUtils::LoadTexture(device, texturePath.string().c_str(),
+					material.occlusionMap.GetAddressOf());
+				_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+			}
+		}
+
+		if (material.metalnessRoughnessMap == nullptr)
+		{
+			if (material.metalnessRoughnessTextureFileName.empty())
+			{
+				// メタルネスラフネステクスチャ作成
+				HRESULT hr = GpuResourceUtils::CreateDummyTexture(device, 0xFFFF7F7F,
+					material.metalnessRoughnessMap.GetAddressOf());
+				_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+			}
+			else
+			{
+				// メタルネスラフネスのテクスチャ読み込み
+				std::filesystem::path texturePath(dirpath / material.metalnessRoughnessTextureFileName);
+				HRESULT hr = GpuResourceUtils::LoadTexture(device, texturePath.string().c_str(),
+					material.metalnessRoughnessMap.GetAddressOf());
+				_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+			}
+		}
 	}
 
 	// ノード構築

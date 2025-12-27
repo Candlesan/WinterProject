@@ -151,6 +151,7 @@
     <ClInclude Include="Source\Mouse.h" />
     <ClInclude Include="Source\MoveComponent.h" />
     <ClInclude Include="Source\NodeBase.h" />
+    <ClInclude Include="Source\PBRShader.h" />
     <ClInclude Include="Source\Player.h" />
     <ClInclude Include="Source\SceneGame.h" />
     <ClInclude Include="Source\ShapeRenderer.h" />
@@ -204,6 +205,7 @@
     <ClCompile Include="Source\Mouse.cpp" />
     <ClCompile Include="Source\MoveComponent.cpp" />
     <ClCompile Include="Source\NodeBase.cpp" />
+    <ClCompile Include="Source\PBRShader.cpp" />
     <ClCompile Include="Source\Player.cpp" />
     <ClCompile Include="Source\SceneGame.cpp" />
     <ClCompile Include="Source\ShapeRenderer.cpp" />
@@ -222,7 +224,10 @@
   <ItemGroup>
     <None Include="Shader\Basic.hlsli" />
     <None Include="Shader\Lambert.hlsli" />
+    <None Include="Shader\PBRShader.hlsli" />
+    <None Include="Shader\physical_based_rendering_functions.hlsli" />
     <None Include="Shader\Scene.hlsli" />
+    <None Include="Shader\shading_functions.hlsli" />
     <None Include="Shader\ShapeRenderer.hlsli" />
     <None Include="Shader\PrimitiveRenderer.hlsli" />
     <None Include="Shader\Skinning.hlsli" />
@@ -242,6 +247,14 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Shader\LambertVS.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\PBRShader_ps.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Shader\PBRShader_vs.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>

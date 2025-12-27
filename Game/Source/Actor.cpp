@@ -220,7 +220,7 @@ void ActorManager::Render(const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOA
 		std::shared_ptr<Model>model = actor->GetModel();
 		if (model != nullptr)
 		{
-			modelRenderer->Draw(ShaderId::Lambert, actor->GetModel());
+			modelRenderer->Draw(ShaderId::PBR, actor->GetModel());
 		}
 	}
 

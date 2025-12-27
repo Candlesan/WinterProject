@@ -4,6 +4,7 @@
 #include "ModelRenderer.h"
 #include "BasicShader.h"
 #include "LambertShader.h"
+#include "PBRShader.h"
 
 // コンストラクタ
 ModelRenderer::ModelRenderer(ID3D11Device* device)
@@ -23,6 +24,7 @@ ModelRenderer::ModelRenderer(ID3D11Device* device)
 	// シェーダー生成
 	shaders[static_cast<int>(ShaderId::Basic)] = std::make_unique<BasicShader>(device);
 	shaders[static_cast<int>(ShaderId::Lambert)] = std::make_unique<LambertShader>(device);
+	shaders[static_cast<int>(ShaderId::PBR)] = std::make_unique<PBRShader>(device);
 }
 
 // 箱描画
@@ -141,6 +143,7 @@ void ModelRenderer::Render(const RenderContext& rc)
 			{
 				TransparencyDrawInfo& transparencyDrawInfo = transparencyDrawInfos.emplace_back();
 				transparencyDrawInfo.mesh = &mesh;
+				transparencyDrawInfo.shaderId = drawInfo.shaderId; // これを追加しないとshaderIdが不定になるらしい
 				// カメラとの距離を算出
 				DirectX::XMVECTOR Position = DirectX::XMVectorSet(
 					mesh.node->worldTransform._41,

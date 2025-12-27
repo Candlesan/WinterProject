@@ -14,6 +14,8 @@
 #include "WeaponCollision.h"
 #include "HealthComponent.h"
 
+#include <imgui.h>
+
 
 // 初期化
 void SceneGame::Initialize()
@@ -32,7 +34,8 @@ void SceneGame::Initialize()
 	// プレイヤーの初期化
 	{
 		std::shared_ptr<Actor> player = ActorManager::Instance().Create();
-		player->LoadModel(device, "Data/Model/unitychan/assassin.gltf");
+		//player->LoadModel(device, "Data/Model/unitychan/assassin.gltf");
+		player->LoadModel(device, "Data/Model/Jammo/jammo.gltf");
 		player->SetName("Player");
 		player->SetPosition({ 0, 0, 0 });
 		player->SetRotation({ 0, 0, 0, 1 });
@@ -120,6 +123,8 @@ void SceneGame::Render()
 	rc.deviceContext = dc;
 	rc.renderState = renderState;
 	rc.camera = &camera;
+	rc.pbrMetalness = this->pbrMetalness;
+	rc.pbrRoughness = this->pbrRoughness;
 
 	// 3Dモデル描画
 	{
@@ -129,6 +134,7 @@ void SceneGame::Render()
 	}
 
 	CollisionManager::Instance().DrawGUI(rc);
+	DrawGUI();
 
 	ShapeRenderer* shapeRenderer = Graphics::Instance().GetShapeRenderer();
 	shapeRenderer->Render(dc, camera.GetView(), camera.GetProjection());
@@ -137,4 +143,34 @@ void SceneGame::Render()
 // GUI描画
 void SceneGame::DrawGUI()
 {
+	ImGui::Begin("Shader");
+	RenderContext rc;
+
+	if (ImGui::CollapsingHeader("light", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		if (ImGui::DragFloat3("Direction", &lightDir.x, 0.01f, -1.0f, 1.0f))
+		{
+			// 1. 正規化
+			DirectX::XMVECTOR v = DirectX::XMLoadFloat3(&lightDir);
+			v = DirectX::XMVector3Normalize(v);
+			DirectX::XMStoreFloat3(&lightDir, v);
+
+			// 2. Graphicsから「本物（constじゃない方）」のポインタを取ってくる
+			LightManager* lm = Graphics::Instance().GetLightManager();
+			if (lm)
+			{
+				DirectionalLight light = lm->GetDirectionalLight();
+				light.direction = lightDir;
+				lm->SetDirectionalLight(light);
+			}
+		}
+	}
+
+	if (ImGui::CollapsingHeader("PBR", ImGuiTreeNodeFlags_DefaultOpen))
+	{
+		ImGui::DragFloat("Adjust Metalness", &pbrMetalness, 0.01f, -1.0f, 1.0f);
+		ImGui::DragFloat("Adjust Roughness", &pbrRoughness, 0.01f, -1.0f, 1.0f);
+	}
+
+	ImGui::End();
 }

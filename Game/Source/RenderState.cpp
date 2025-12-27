@@ -84,6 +84,26 @@ RenderState::RenderState(ID3D11Device* device)
 			samplerStates[static_cast<int>(SamplerState::LinearClamp)].GetAddressOf());
 		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
 	}
+	// 異方性フィルタリング＆テクスチャ繰り返しあり
+	{
+		D3D11_SAMPLER_DESC desc;
+		desc.MipLODBias = 0.0f;
+		desc.MaxAnisotropy = 16; // 最大16倍まで細かく計算する
+		desc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+		desc.MinLOD = -D3D11_FLOAT32_MAX;
+		desc.MaxLOD = D3D11_FLOAT32_MAX;
+		desc.BorderColor[0] = 1.0f;
+		desc.BorderColor[1] = 1.0f;
+		desc.BorderColor[2] = 1.0f;
+		desc.BorderColor[3] = 1.0f;
+		desc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+		desc.Filter = D3D11_FILTER_ANISOTROPIC;
+		HRESULT hr = device->CreateSamplerState(&desc,
+			samplerStates[static_cast<int>(SamplerState::AnisotropicWrap)].GetAddressOf());
+		_ASSERT_EXPR(SUCCEEDED(hr), HRTrace(hr));
+	}
 
 	// 深度テストあり＆深度書き込みあり
 	{

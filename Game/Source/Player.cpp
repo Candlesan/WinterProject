@@ -97,7 +97,8 @@ void Player::UpdateAnimation(float elapsedTime)
 	case Player::State::Idle:
 		animationLoop = true;
 		useRootMotion = false;
-		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("idle");
+		//newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("idle");
+		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("Idle");
 
 		if (moveLength > 0.01f)
 		{
@@ -110,7 +111,8 @@ void Player::UpdateAnimation(float elapsedTime)
 	case Player::State::Run:
 		animationLoop = true;
 		useRootMotion = false;
-		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("run");
+		//newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("run");
+		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("Running");
 
 		if (moveLength < 0.01f)
 		{
@@ -121,7 +123,8 @@ void Player::UpdateAnimation(float elapsedTime)
 	case Player::State::Attack:
 		animationLoop = false;
 		useRootMotion = false;
-		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("slash");
+		//newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("slash");
+		newAnimationIndex = GetActor()->GetModel()->GetAnimationIndex("Attack");
 
 		const Model::Animation& animation = GetActor()->GetModel()->GetAnimations().at(animationIndex);		
 
@@ -317,7 +320,8 @@ std::shared_ptr<WeaponCollision> Player::GetWeaponCollision()
 // 武器のアタッチメント
 void Player::WeaponAttachment(float elapsedTime)
 {
-	std::string rightHandName = "mixamorig:RightHand";
+	//std::string rightHandName = "mixamorig:RightHand";
+	std::string rightHandName = "mixamorig:LeftHand";
 
 	ModelRenderer* modelremderer = Graphics::Instance().GetModelRenderer();
 
