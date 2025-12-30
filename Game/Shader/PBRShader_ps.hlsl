@@ -11,6 +11,12 @@ Texture2D normalTexture : register(t4);
 SamplerState samplerLinear : register(s0);
 SamplerState sampler_anistoropic : register(s1);
 
+// IBL用テクスチャ
+TextureCube diffuse_iem : register(t33);
+TextureCube specular_pmrem : register(t34);
+Texture2D lut_ggx : register(t35);
+
+
 float4 main(VS_OUT pin, bool is_front_face : SV_IsFrontFace) : SV_TARGET
 {
     // ベースカラーを取得
@@ -109,12 +115,15 @@ float4 main(VS_OUT pin, bool is_front_face : SV_IsFrontFace) : SV_TARGET
         }
     }
     
+    // IBL処理
+    float3 ambient = ambient_color.rgb * ambient_color.a;
+    total_diffuse += ambient * DiffuseIBL(N, V, roughness, diffuse_reflectance, F0, diffuse_iem, samplerLinear);
+    total_specular += ambient * SpecularIBL(N, V, roughness, F0, lut_ggx, specular_pmrem, samplerLinear);
 
     // 遮蔽処理
     total_diffuse = lerp(total_diffuse, total_diffuse /** occlusion_factor*/, occlusionStrength);
     total_specular = lerp(total_specular, total_specular /** occlusion_factor*/, occlusionStrength);
-    
-    
+      
     // 色生成
     float3 color = total_diffuse + total_specular + emisive_color;
     // sRGB空間へ

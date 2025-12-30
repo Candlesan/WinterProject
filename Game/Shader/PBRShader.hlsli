@@ -14,6 +14,7 @@ cbuffer MATERIAL_CONSTANT_BUFFER : register(b13)
 {
     float4 materialColor; // 光をそのまま反射する反射率のデータを持ったテクスチャ
     float3 emissiveColor; // 自ら発行するデータを持ったテクスチャ
+    float4 ambient_color;
     float metalness;
     float roughness; // 質感・粗さを決定する値
     float adjustmetalness;

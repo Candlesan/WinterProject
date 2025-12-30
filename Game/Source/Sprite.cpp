@@ -136,9 +136,9 @@ Sprite::Sprite(ID3D11Device* device, Microsoft::WRL::ComPtr<ID3D11ShaderResource
 	if (shader_resource_view)
 	{
 		isLoadFile = false;
-		shader_resource_view.Get()->AddRef();
+		//shader_resource_view.Get()->AddRef();
 		this->shaderResourceView = shader_resource_view;
-		// 
+
 		Microsoft::WRL::ComPtr<ID3D11Resource> resource;
 		this->shaderResourceView->GetResource(resource.GetAddressOf());
 		Microsoft::WRL::ComPtr<ID3D11Texture2D> texture2d;

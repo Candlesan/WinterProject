@@ -1,6 +1,7 @@
 #include "PBRShader.h"
 #include "GpuResourceUtils.h"
 #include "Graphics.h"
+#include "Sprite.h"
 
 
 // コンストラクタ
@@ -25,6 +26,14 @@ PBRShader::PBRShader(ID3D11Device* device)
         device,
         sizeof(CbMesh),
         meshConstantBuffer.GetAddressOf());
+
+    // IBLテクスチャを読み込み
+    {
+        D3D11_TEXTURE2D_DESC texture2d_desc;
+        GpuResourceUtils::LoadTexture(device, "Data/Sprite/IBL/diffuse_iem.dds", diffuse_iem_shader_resource_view.GetAddressOf(), &texture2d_desc);
+        GpuResourceUtils::LoadTexture(device, "Data/Sprite/IBL/specular_pmrem.dds", specular_pmrem_shader_resource_view.GetAddressOf(), &texture2d_desc);
+        GpuResourceUtils::LoadTexture(device, "Data/Sprite/IBL/lut_ggx.dds", lut_ggx_shader_resource_view.GetAddressOf(), &texture2d_desc);
+    }
 }
 
 // 開始処理
@@ -54,6 +63,7 @@ void PBRShader::Update(const RenderContext& rc, const Model::Mesh& mesh)
     CbMesh cbMesh{};
     cbMesh.materialColor = mesh.material->baseColor;
     cbMesh.emissiveColor = mesh.material->emissiveColor;
+    cbMesh.ambientColor = { 1, 1, 1, 1 };
     cbMesh.metalness = mesh.material->metalness;
     cbMesh.roughness = mesh.material->roughness;
     cbMesh.adjustMetalness = rc.pbrMetalness;
@@ -79,6 +89,15 @@ void PBRShader::Update(const RenderContext& rc, const Model::Mesh& mesh)
         mesh.material->normalMap.Get(),
     };
     dc->PSSetShaderResources(0, _countof(srvs), srvs);
+
+    // IBLテクスチャをシェーダーに送る
+    ID3D11ShaderResourceView* shader_resource_views[] =
+    {
+        diffuse_iem_shader_resource_view.Get(),
+        specular_pmrem_shader_resource_view.Get(),
+        lut_ggx_shader_resource_view.Get(),
+    };
+    dc->PSSetShaderResources(33, _countof(shader_resource_views), shader_resource_views);
 }
 
 // 終了処理

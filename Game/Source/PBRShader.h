@@ -21,6 +21,7 @@ private:
     {
         DirectX::XMFLOAT4 materialColor;
         DirectX::XMFLOAT3 emissiveColor;
+        DirectX::XMFLOAT4 ambientColor;
         float metalness;
         float roughness;
         float adjustMetalness; // 福井先生にいらないって言われたけど消すとめんどいことなるから残してる
@@ -42,4 +43,9 @@ private:
     Microsoft::WRL::ComPtr<ID3D11PixelShader>        pixelShader;
     Microsoft::WRL::ComPtr<ID3D11InputLayout>        inputLayout;
     Microsoft::WRL::ComPtr<ID3D11Buffer>            meshConstantBuffer;
+
+    // IBL用のテクスチャ
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> diffuse_iem_shader_resource_view;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> specular_pmrem_shader_resource_view;
+    Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> lut_ggx_shader_resource_view;
 };
