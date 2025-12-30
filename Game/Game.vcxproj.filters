@@ -88,6 +88,15 @@
     <Filter Include="Source\Shader\PBR">
       <UniqueIdentifier>{d0268eca-e946-4477-b27f-73a4164e3804}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source\Shader\SkyMap">
+      <UniqueIdentifier>{36590c8f-989e-4187-8c7a-fff4e04d6bcd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader\SkyMap">
+      <UniqueIdentifier>{a71ff130-1c06-44ea-a72f-d2f25e40ae52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External\SimpleMath">
+      <UniqueIdentifier>{402742b3-7c10-419d-a41d-af2d9e664280}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="External\imgui-docking\imconfig.h">
@@ -267,6 +276,15 @@
     <ClInclude Include="Source\PBRShader.h">
       <Filter>Source\Shader\PBR</Filter>
     </ClInclude>
+    <ClInclude Include="Source\SkyMap.h">
+      <Filter>Source\Shader\SkyMap</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SimpleMath.h">
+      <Filter>External\SimpleMath</Filter>
+    </ClInclude>
+    <ClInclude Include="Shader\Math.h">
+      <Filter>Source\System</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui-docking\imgui.cpp">
@@ -413,6 +431,9 @@
     <ClCompile Include="Source\PBRShader.cpp">
       <Filter>Source\Shader\PBR</Filter>
     </ClCompile>
+    <ClCompile Include="Source\SkyMap.cpp">
+      <Filter>Source\Shader\SkyMap</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shader\Basic.hlsli">
@@ -444,6 +465,9 @@
     </None>
     <None Include="Shader\PBRShader.hlsli">
       <Filter>Shader\PBR</Filter>
+    </None>
+    <None Include="Shader\SkyMap.hlsli">
+      <Filter>Shader\SkyMap</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -482,6 +506,12 @@
     </FxCompile>
     <FxCompile Include="Shader\PBRShader_ps.hlsl">
       <Filter>Shader\PBR</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\SkyMap_VS.hlsl">
+      <Filter>Shader\SkyMap</Filter>
+    </FxCompile>
+    <FxCompile Include="Shader\SkyMap_PS.hlsl">
+      <Filter>Shader\SkyMap</Filter>
     </FxCompile>
   </ItemGroup>
 </Project>

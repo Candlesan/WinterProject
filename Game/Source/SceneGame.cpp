@@ -14,6 +14,9 @@
 #include "WeaponCollision.h"
 #include "HealthComponent.h"
 
+// シェーダー
+#include "SkyMap.h"
+
 #include <imgui.h>
 
 
@@ -131,6 +134,11 @@ void SceneGame::Render()
 		// すべてのアクター内のモデルを描画
 		ActorManager::Instance().Render(camera.GetView(), camera.GetProjection());
 		modelRenderer->Render(rc);
+	}
+
+	// 2D描画
+	{
+		modelRenderer->GetShader<SkyMap>(ShaderId::SkyMap)->Draw(rc);
 	}
 
 	CollisionManager::Instance().DrawGUI(rc);

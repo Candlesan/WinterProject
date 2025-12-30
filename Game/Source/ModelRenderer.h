@@ -13,6 +13,7 @@ enum class ShaderId
 	Basic,
 	Lambert,
 	PBR,
+	SkyMap,
 
 	EnumCount
 };
@@ -29,7 +30,10 @@ public:
 	// ï`âÊé¿çs
 	void Render(const RenderContext& rc);
 
-private:
+	//Shader* GetShader(ShaderId id) const { return shaders[static_cast<int>(id)].get(); }
+
+	template <typename T>
+	T* GetShader(ShaderId id) const { return static_cast<T*>(shaders[static_cast<int>(id)].get()); }private:
 	struct CbScene
 	{
 		DirectX::XMFLOAT4X4		viewProjection;
