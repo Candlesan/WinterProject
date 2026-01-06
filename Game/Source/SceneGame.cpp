@@ -30,8 +30,9 @@ void SceneGame::Initialize()
 	// ステージモデルの初期化
 	{
 		std::shared_ptr<Actor> actor = ActorManager::Instance().Create();
-		actor->LoadModel(device, "Data/Model/Stage/ExampleStage.glb");
+		actor->LoadModel(device, "Data/Model/Stage/circle_of_death.gltf");
 		actor->SetName("Stage");
+		actor->SetScale({ 0.025, 0.025, 0.025 });
 		actor->SetPosition({ 0, 0, 0 });
 	}
 	// プレイヤーの初期化
@@ -128,6 +129,7 @@ void SceneGame::Render()
 	rc.camera = &camera;
 	rc.pbrMetalness = this->pbrMetalness;
 	rc.pbrRoughness = this->pbrRoughness;
+	rc.lightManager = &lightManager;
 
 	// 3Dモデル描画
 	{
@@ -156,22 +158,11 @@ void SceneGame::DrawGUI()
 
 	if (ImGui::CollapsingHeader("light", ImGuiTreeNodeFlags_DefaultOpen))
 	{
-		if (ImGui::DragFloat3("Direction", &lightDir.x, 0.01f, -1.0f, 1.0f))
-		{
-			// 1. 正規化
-			DirectX::XMVECTOR v = DirectX::XMLoadFloat3(&lightDir);
-			v = DirectX::XMVector3Normalize(v);
-			DirectX::XMStoreFloat3(&lightDir, v);
-
-			// 2. Graphicsから「本物（constじゃない方）」のポインタを取ってくる
-			LightManager* lm = Graphics::Instance().GetLightManager();
-			if (lm)
-			{
-				DirectionalLight light = lm->GetDirectionalLight();
-				light.direction = lightDir;
-				lm->SetDirectionalLight(light);
-			}
-		}
+		DirectionalLight& light = lightManager.GetDirectionalLight();
+		// 並行光源
+		ImGui::DragFloat3("light", &light.direction.x, 0.01f, -1.0, 1.0);
+		ImGui::ColorEdit3("light color", &light.color.x);
+		lightManager.SetDirectionalLight(light);
 	}
 
 	if (ImGui::CollapsingHeader("PBR", ImGuiTreeNodeFlags_DefaultOpen))
