@@ -30,9 +30,9 @@ PBRShader::PBRShader(ID3D11Device* device)
     // IBLテクスチャを読み込み
     {
         D3D11_TEXTURE2D_DESC texture2d_desc;
-        GpuResourceUtils::LoadTexture(device, "Data/Sprite/IBL/diffuse_iem.dds", diffuse_iem_shader_resource_view.GetAddressOf(), &texture2d_desc);
-        GpuResourceUtils::LoadTexture(device, "Data/Sprite/IBL/specular_pmrem.dds", specular_pmrem_shader_resource_view.GetAddressOf(), &texture2d_desc);
-        GpuResourceUtils::LoadTexture(device, "Data/Sprite/IBL/lut_ggx.dds", lut_ggx_shader_resource_view.GetAddressOf(), &texture2d_desc);
+        GpuResourceUtils::LoadTexture(device, "Data/Sprite/IBL/night/diffuse_iem.dds", diffuse_iem_shader_resource_view.GetAddressOf(), &texture2d_desc);
+        GpuResourceUtils::LoadTexture(device, "Data/Sprite/IBL/night/specular_pmrem.dds", specular_pmrem_shader_resource_view.GetAddressOf(), &texture2d_desc);
+        GpuResourceUtils::LoadTexture(device, "Data/Sprite/IBL/night/lut_ggx.dds", lut_ggx_shader_resource_view.GetAddressOf(), &texture2d_desc);
     }
 }
 

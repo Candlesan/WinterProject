@@ -39,6 +39,7 @@ SkyMap::SkyMap(ID3D11Device* device)
 	GpuResourceUtils::LoadTexture(
 		device,
 		"Data/Sprite/SkyMap/overcast_soil_puresky.png",
+		//"Data/Sprite/SkyMap/night.png",
 		skymap_shader_resource_view.GetAddressOf(),
 		&skymap_texture2d_desc);
 
